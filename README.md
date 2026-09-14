@@ -123,52 +123,85 @@ Desafios_Dados/
 Pré-requisitos: Python 3.10+, Docker, Git.
 
 ```bash
-# 1. criar ambiente
+# 1. criar ambiente virtual Python (3.10+)
 python -m venv .venv
 
-# Windows:
-.\venv\Scripts\Activate.ps1
+# Windows (PowerShell):
+.\.venv\Scripts\Activate.ps1
+
+# Windows (Prompt de Comando CMD):
+.venv\Scripts\activate.bat
 
 # Linux/Mac:
-source venv/bin/activate
+source .venv/bin/activate
 
 # 2. instalar dependências
 pip install -r requirements.txt
 
-# 3. criar .env na raiz (POSTGRES_* e MONGO_*)
+# 3. criar o arquivo .env a partir do modelo .env.example
+# Windows (PowerShell):
+Copy-Item .env.example .env
+# Windows (CMD):
+copy .env.example .env
+# Linux / Mac:
+cp .env.example .env
 
-# 4. subir serviços (PostgreSQL com pgvector, MongoDB, Apache Superset e Apresentação)
+# Nota: As portas e credenciais padrão já vêm configuradas (PostgreSQL na porta 5433 para
+# evitar conflito com instâncias locais na 5432, e MongoDB na 27017). Se desejar alterar,
+# basta editar as variáveis dentro do arquivo .env.
+
+# 4. subir serviços (PostgreSQL com pgvector, MongoDB, Apache Superset e Apresentação Web)
 docker compose up -d
 
-> **Automação do Apache Superset:** O container `desafio_superset` inicializa o banco de metadados, cria o usuário administrador (`admin`/`admin`), sincroniza permissões com perfil público e provisiona os datasets e o dashboard automaticamente via `docker-compose.yml`.
-
-# 5. rodar pipeline completo (ingestão, validação, bancos, embeddings, recomendações e KPIs)
+# 5. rodar pipeline completo (processamento dos dados + geração automática dos gráficos no Superset)
 python -m src.main
+
+# 6. (Opcional) Gerar ou atualizar especificamente os gráficos e dashboard do Superset a qualquer momento:
+python -m src.superset_dashboard
+# Ou diretamente pelo container:
+# docker exec desafio_superset python /app/setup_superset_internal.py
 ```
 
-O schema PostgreSQL é criado automaticamente na carga (`sql/criar_tabelas.sql`), juntamente com as visões analíticas de métricas e KPIs (`sql/criar_views_kpi.sql`). Consultas manuais de verificação: `sql/consultas.sql`. A coleção MongoDB (índices e validador) é aplicada na carga; consultas manuais: `mongodb/consultas.js`.
+> **Geração e Sincronização dos Gráficos no Apache Superset (RF13):**
+> - Ao rodar `python -m src.main`, o pipeline processa os dados, aplica todas as visões analíticas de KPIs no PostgreSQL e, na **Fase 3**, provisiona/atualiza automaticamente os **10 gráficos analíticos** e o **Dashboard ID 1** no Superset.
+> - Se você subir o Docker do zero ou reiniciar os containers e desejar apenas sincronizar/recriar os gráficos e o dashboard sem reprocessar todos os dados, basta executar:
+>   ```bash
+>   python -m src.superset_dashboard
+>   ```
+> - Após a execução, o Dashboard e os gráficos estarão disponíveis imediatamente tanto na interface do Superset quanto no **Slide 4 (Modo Kiosk ao vivo)** da apresentação web.
 
-Depois dos embeddings, o pipeline demonstra a busca semântica (RF09), gera e persiste as recomendações (RF10/RF11) e consolida os KPIs (RF12). Para repetir só essas etapas:
+### Acesso aos Serviços e URLs do Projeto
+
+- **Apresentação Executiva Web (Slides com Kiosk Superset)**:
+  - **URL**: [http://localhost:8085](http://localhost:8085) (ou [http://localhost:8085/slides.html](http://localhost:8085/slides.html))
+  - **Slide 4**: Exibe o **Dashboard do Superset ao vivo em modo Kiosk** (`/superset/dashboard/1/?standalone=2`), interativo, sem barras de navegação externas e com dados reais.
+
+- **Apache Superset (RF13)**:
+  - **URL**: [http://localhost:8088](http://localhost:8088)
+  - **Dashboard Direto (Kiosk Mode)**: [http://localhost:8088/superset/dashboard/1/?standalone=2](http://localhost:8088/superset/dashboard/1/?standalone=2)
+  - **Login / Senha**: `admin` / `admin` (também configurado com perfil público para visualização direta de dashboards e gráficos).
+  - O dashboard consolidado está acessível em **Dashboards** -> `Plataforma Educacional — KPIs e Recomendações`.
+  - Backup estático do dashboard disponível em `dashboard/dashboard_plataforma_educacional.zip`.
+
+### Comandos para Execução Modular (Opcional)
+
+Se desejar testar módulos individuais separadamente após a carga inicial:
 
 ```bash
+# Busca semântica vetorial (RF09)
 python -m src.busca_semantica
 python -m src.busca_semantica "Quero aprender os fundamentos de banco de dados para inteligência artificial."
 
+# Motor de recomendações (RF10 / RF11)
 python -m src.recomendacao
 python -m src.recomendacao 1
 
+# Recálculo de métricas e visões SQL de KPIs (RF12)
 python -m src.kpis
+
+# Provisionamento e sincronização do Dashboard e Gráficos no Apache Superset (RF13)
+python -m src.superset_dashboard
 ```
-
-### Acesso ao Apache Superset (RF13)
-
-- **URL**: [http://localhost:8088](http://localhost:8088)
-- **Usuário**: `admin`
-- **Senha**: `admin`
-- O dashboard consolidado está acessível em **Dashboards** -> `Plataforma Educacional — KPIs e Recomendações`.
-- Arquivo exportado do dashboard disponível em `dashboard/dashboard_plataforma_educacional.zip`.
-
-### Apresentação Executiva de Slides (Docker / Web)
 
 A solução inclui uma apresentação interativa moderna com 9 slides executivos, estruturada especificamente para a banca avaliadora com ênfase na análise de dados, KPIs (RF12) e Dashboard no Apache Superset (RF13):
 

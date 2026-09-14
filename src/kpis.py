@@ -11,6 +11,7 @@ from src.config import RAIZ_PROJETO, load_config, postgres_url
 from src.logger import get_logger
 
 CAMINHO_VIEWS_SQL = RAIZ_PROJETO / "sql" / "criar_views_kpi.sql"
+CAMINHO_EXTRAS_SQL = RAIZ_PROJETO / "sql" / "criar_kpis_extras.sql"
 CAMINHO_JSON_SAIDA = RAIZ_PROJETO / "dados" / "processados" / "kpis_resumo.json"
 
 
@@ -41,6 +42,13 @@ class GeradorKPIs:
         with self.engine.connect() as conn:
             conn.execute(text(ddl))
             conn.commit()
+
+        if CAMINHO_EXTRAS_SQL.exists():
+            self.logger.info("Aplicando visões e tabelas auxiliares de KPIs extras...")
+            ddl_extras = CAMINHO_EXTRAS_SQL.read_text(encoding="utf-8")
+            with self.engine.connect() as conn:
+                conn.execute(text(ddl_extras))
+                conn.commit()
 
         self.logger.info("Visões SQL aplicadas com sucesso.")
 

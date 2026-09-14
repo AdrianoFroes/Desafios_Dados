@@ -145,14 +145,22 @@ with app.app_context():
 """
 
 def provisionar_dashboard():
-    print("Criando componentes e layout do Dashboard no Apache Superset...")
-    cmd = f'docker cp src/setup_superset_internal.py {CONTAINER_NAME}:/tmp/setup_superset_internal.py && docker exec {CONTAINER_NAME} python /tmp/setup_superset_internal.py'
+    print("=" * 60)
+    print("Provisionando componentes e layout do Dashboard no Apache Superset (RF13)...")
+    print("=" * 60)
+    cmd = f'docker exec {CONTAINER_NAME} python /app/setup_superset_internal.py'
     res = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     if res.returncode != 0:
-        print("Erro ao criar dashboard:", res.stderr or res.stdout)
-        return False
+        # Fallback com docker cp caso o volume não esteja mapeado
+        cmd_fallback = f'docker cp src/setup_superset_internal.py {CONTAINER_NAME}:/tmp/setup_superset_internal.py && docker exec {CONTAINER_NAME} python /tmp/setup_superset_internal.py'
+        res = subprocess.run(cmd_fallback, shell=True, capture_output=True, text=True)
+        if res.returncode != 0:
+            print("Aviso/Erro ao provisionar dashboard no Superset:", res.stderr or res.stdout)
+            return False
     print(res.stdout)
-    print("Dashboard provisionado com sucesso!")
+    print("Dashboard e gráficos no Apache Superset provisionados com sucesso!")
+    print("URL Direta do Dashboard (Kiosk): http://localhost:8088/superset/dashboard/1/?standalone=2")
+    print("URL da Apresentação Web: http://localhost:8085/slides.html")
     return True
 
 if __name__ == "__main__":

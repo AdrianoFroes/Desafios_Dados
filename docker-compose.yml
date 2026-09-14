@@ -37,6 +37,7 @@ services:
       - superset_home:/app/superset_home
       - ./dashboard/superset_config.py:/app/pythonpath/superset_config.py:ro
       - ./src/setup_superset_internal.py:/app/setup_superset_internal.py:ro
+      - ./sql:/app/sql:ro
     command: >
       /bin/sh -c "
       superset db upgrade &&

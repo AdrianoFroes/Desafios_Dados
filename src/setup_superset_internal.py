@@ -1,4 +1,6 @@
 import json
+import os
+import time
 from superset.app import create_app
 
 app = create_app()
@@ -8,13 +10,51 @@ with app.app_context():
     from superset.models.slice import Slice
     from superset.models.dashboard import Dashboard
     from superset.connectors.sqla.models import SqlaTable
+    from sqlalchemy import create_engine, text
 
     # 1. Obter usuário admin
     admin = security_manager.find_user("admin")
     owners = [admin] if admin else []
 
-    # 2. Registrar conexão PostgreSQL
+    # 2. Conectar e aguardar PostgreSQL estar pronto
     pg_uri = "postgresql+psycopg2://postgres:postgres@postgres:5432/plataforma_educacional"
+    print("Aguardando conexao com PostgreSQL...")
+    engine_pg = None
+    for tentativa in range(1, 16):
+        try:
+            engine_pg = create_engine(pg_uri)
+            with engine_pg.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            print(f"Conexao com PostgreSQL estabelecida com sucesso na tentativa {tentativa}.")
+            break
+        except Exception as e:
+            print(f"Tentativa {tentativa}/15: PostgreSQL ainda nao disponivel ({e}). Aguardando 2s...")
+            time.sleep(2)
+
+    # 2.1 Garantir que as views e tabelas existam no PostgreSQL (para inicializacao do zero)
+    if engine_pg:
+        try:
+            with engine_pg.connect() as conn:
+                res = conn.execute(text("SELECT 1 FROM information_schema.views WHERE table_name = 'vw_kpi_metricas_gerais'")).first()
+                if not res:
+                    print("Views de KPI nao encontradas. Inicializando DDLs SQL...")
+                    sql_files = [
+                        "/app/sql/criar_tabelas.sql",
+                        "/app/sql/criar_views_kpi.sql",
+                        "/app/sql/criar_kpis_extras.sql"
+                    ]
+                    for sfile in sql_files:
+                        if os.path.exists(sfile):
+                            print(f"Executando {sfile} no PostgreSQL...")
+                            with open(sfile, "r", encoding="utf-8") as f:
+                                ddl_content = f.read()
+                            conn.execute(text(ddl_content))
+                            conn.commit()
+                            print(f"{sfile} executado com sucesso.")
+        except Exception as e:
+            print(f"Aviso durante inicializacao automatica do schema SQL: {e}")
+
+    # 2.2 Registrar conexao PostgreSQL no Superset
     db_name = "Plataforma Educacional (PostgreSQL)"
     db_obj = db.session.query(Database).filter_by(database_name=db_name).first()
     if not db_obj:
@@ -23,7 +63,7 @@ with app.app_context():
         db.session.commit()
         print(f"Banco '{db_name}' criado com id: {db_obj.id}")
     else:
-        print(f"Banco '{db_name}' já existe com id: {db_obj.id}")
+        print(f"Banco '{db_name}' ja existe com id: {db_obj.id}")
 
     # 3. Registrar Datasets de todas as views (RF12 / RF13 + KPIs Extras)
     views_info = [
@@ -54,12 +94,18 @@ with app.app_context():
             )
             db.session.add(tbl)
             db.session.commit()
-            tbl.fetch_metadata()
-            db.session.commit()
+            try:
+                tbl.fetch_metadata()
+                db.session.commit()
+            except Exception as e:
+                print(f"Aviso metadata para {table_name}: {e}")
             print(f"Dataset '{table_name}' criado com id: {tbl.id}")
         else:
-            tbl.fetch_metadata()
-            db.session.commit()
+            try:
+                tbl.fetch_metadata()
+                db.session.commit()
+            except Exception as e:
+                print(f"Aviso metadata para {table_name}: {e}")
             print(f"Dataset '{table_name}' sincronizado com id: {tbl.id}")
         datasets[table_name] = tbl
 

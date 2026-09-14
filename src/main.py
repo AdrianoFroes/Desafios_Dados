@@ -127,17 +127,28 @@ def main():
 
         # ---------- FASE 2: Resumo Consolidado (RF05/RF14) ----------
         logger.info("[FASE 2] Consolidando resumo da ingestao e registro de execucao (RF05/RF14)")
-        duracao = round(time.time() - inicio, 2)
         resumo = ingestor.consolidar_resumo(
             relatorios_validacao=validador.get_relatorios(),
             corrigidos=tratador.get_corrigidos(),
             carregados_pg=carregados_pg,
             carregados_mongo=carregados_mongo,
-            tempo=duracao,
+            tempo=round(time.time() - inicio, 2),
             tempos_etapas=tempos_etapas,
         )
         logger.info("Resumo consolidado: " + str(resumo))
 
+        # ---------- FASE 3: Dashboard e Gráficos no Apache Superset (RF13) ----------
+        logger.info("[FASE 3] Provisionamento do Dashboard e Gráficos no Apache Superset (RF13)")
+        t0 = time.time()
+        try:
+            from src.superset_dashboard import provisionar_dashboard
+            provisionar_dashboard()
+            tempos_etapas["superset_dashboard"] = round(time.time() - t0, 3)
+            logger.info(f"Dashboard Superset provisionado em {tempos_etapas['superset_dashboard']}s")
+        except Exception as e:
+            logger.warning(f"Aviso no provisionamento do Superset: {e}. Pode ser provisionado com 'python -m src.superset_dashboard'.")
+
+        duracao = round(time.time() - inicio, 2)
         logger.info("=" * 60)
         logger.info(f"FIM DO PIPELINE COM SUCESSO - duracao total: {duracao}s")
         logger.info("Tempos detalhados por etapa:")
