@@ -58,7 +58,35 @@ services:
       - .:/usr/share/nginx/html:ro
     restart: unless-stopped
 
+  apache_hop:
+    image: apache/hop-web:2.19.0
+    container_name: desafio_apache_hop
+    ports:
+      - "8086:8080"
+    environment:
+      HOP_CONFIG_FOLDER: /hop/config
+      HOP_AUDIT_FOLDER: /hop/audit
+      HOP_PROJECT_NAME: plataforma
+      HOP_PROJECT_FOLDER: /hop/projects/plataforma
+      HOP_ENVIRONMENT_NAME: docker
+      HOP_ENVIRONMENT_CONFIG_FILE_NAME_PATHS: /hop/projects/plataforma/docker-env.json
+      HOP_SHARED_JDBC_FOLDERS: /usr/local/tomcat/jdbc-drivers
+      HOP_WEB_SECURITY_MODE: BASIC
+      HOP_WEB_ADMIN_USER: admin
+      HOP_WEB_ADMIN_PASSWORD: ${HOP_WEB_ADMIN_PASSWORD:-admin}
+    volumes:
+      - hop_config:/hop/config
+      - hop_audit:/hop/audit
+      - ./hop:/hop/projects
+      - ./dados:/dados:ro
+    depends_on:
+      - postgres
+      - mongodb
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   mongo_data:
   superset_home:
+  hop_config:
+  hop_audit:
