@@ -10,7 +10,7 @@
       "accessType": 0,
       "sshTunnelUsername": "",
       "hostname": "${DB_HOST}",
-      "password": "Encrypted 2be98afc86aa7f2e4cb79ce10be93abd7",
+      "password": "Encrypted 2be98afc86aa7f2e4bb16bd64d980aac9",
       "pluginName": "PostgreSQL",
       "port": "${DB_PORT}",
       "sshTunnelHost": "",

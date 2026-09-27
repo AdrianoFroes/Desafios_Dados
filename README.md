@@ -202,6 +202,41 @@ Se a senha do Postgres no `.env` mudar depois do primeiro `docker compose up`, �
 - **Apache Superset (RF13)**: orquestrado via container próprio com SQLite interno de metadados e conexão ao banco PostgreSQL do projeto. Provisionamento automático de views, datasets e dashboards via API/script Python.
 - **Registro de Execução (RF14)**: log com cronometragem granular de cada etapa do pipeline gravado no resumo JSON e no arquivo de log.
 
+## Desafio 2 — qualidade, Gold, Parquet e Beam
+
+A Silver continua sendo produzida pelo Apache Hop. Antes do primeiro workflow com qualidade e Gold, copie os scripts para o container e aplique uma vez. No Windows, não encaminhe o arquivo pelo pipe do PowerShell: a acentuação dos domínios (`Vídeo`, `Básico`) chega corrompida.
+
+```bash
+docker cp sql/qualidade.sql desafio_postgres:/tmp/qualidade.sql
+docker cp sql/camada_gold.sql desafio_postgres:/tmp/camada_gold.sql
+docker exec desafio_postgres psql -U postgres -d plataforma_educacional -v ON_ERROR_STOP=1 -f /tmp/qualidade.sql
+docker exec desafio_postgres psql -U postgres -d plataforma_educacional -v ON_ERROR_STOP=1 -f /tmp/camada_gold.sql
+```
+
+O workflow `hop/workflows/orquestrador.hwf` chama, nesta ordem, `qualidade.hpl`, `qualidade_gate.hpl` e `gold.hpl`. O gate é um pipeline separado para o resultado do teste já estar gravado quando um teste crítico interrompe a Gold.
+
+As tabelas de consumo ficam em `gold.*`. O contrato de grão, chave e fórmula está no cabeçalho de `sql/camada_gold.sql`. As regras dos cinco testes estão em `qualidade/regras.md`.
+
+Parquet e Beam leem `silver.interacao` e gravam em `dados/gold/` e `beam/evidencias/medicoes.json`:
+
+```bash
+python beam/pipeline.py --execucao-id gold-local-1
+```
+
+O DirectRunner roda na máquina local com `python beam/pipeline.py --execucao-id gold-local-1 --pular-spark`. No Apache Beam 2.76 essa opção executa o pipeline no Prism, o motor local usado pelo DirectRunner quando a transformação é compatível.
+
+O Spark não fecha com o cliente no Windows e o job server no Docker: o executor tenta falar com o worker Python em `localhost` e cai no container, não na máquina. O cliente precisa compartilhar a rede do job server:
+
+```bash
+docker run -d --name beam_spark_job -p 8099:8099 -p 8098:8098 -p 8097:8097 apache/beam_spark3_job_server:2.76.0 --job-host=0.0.0.0 --spark-master-url=local[2]
+
+docker run --rm --network container:beam_spark_job -v "%CD%:/work" -w /work -e POSTGRES_HOST=host.docker.internal -e POSTGRES_PORT=5434 python:3.12-slim bash -c "pip install -q 'apache-beam==2.76.0' pyarrow psycopg2-binary python-dotenv pyyaml && python beam/pipeline.py --execucao-id gold-local-1 --job-endpoint localhost:8099 --artifact-endpoint localhost:8098"
+```
+
+A porta `5434` é a deste ambiente, porque `5433` já estava ocupada. No `docker-compose.yml` do projeto a porta publicada continua `5433`.
+
+Versões usadas nesta etapa: Apache Hop 2.19.0, Apache Beam 2.76.0, job server Spark `apache/beam_spark3_job_server:2.76.0` (Spark local[2]), Apache Superset 3.1.1. A agregação é a mesma da `gold.fato_engajamento_dia`: conteúdo e dia, com conclusão definida por tipo `conclusão` ou percentual >= 100. O Parquet de entrada é particionado por ano e mês. Nesta base o Parquet ficou menor que o JSON, mas a leitura do JSON foi mais rápida: o recorte tem cerca de mil linhas, pouco para o formato colunar compensar.
+
 ## Status da Solução
 
 Todos os requisitos obrigatórios do edital (**RF01 a RF14**) foram integralmente implementados, testados e documentados.
