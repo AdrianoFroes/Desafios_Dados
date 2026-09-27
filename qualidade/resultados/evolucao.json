@@ -1,0 +1,74 @@
+[
+  {
+    "execucao_id": "gold-local-1",
+    "executado_em": "2026-09-27 01:53:11.251746",
+    "teste": "completude_titulo",
+    "fonte": "silver.conteudo",
+    "valor": 100.0,
+    "limite": 99.0,
+    "aprovado": true
+  },
+  {
+    "execucao_id": "gold-local-1",
+    "executado_em": "2026-09-27 01:53:11.251888",
+    "teste": "consistencia_conclusao",
+    "fonte": "silver.interacao",
+    "valor": 100.0,
+    "limite": 90.0,
+    "aprovado": true
+  },
+  {
+    "execucao_id": "gold-local-2",
+    "executado_em": "2026-09-27 01:53:11.255010",
+    "teste": "completude_titulo",
+    "fonte": "silver.conteudo",
+    "valor": 100.0,
+    "limite": 99.0,
+    "aprovado": true
+  },
+  {
+    "execucao_id": "gold-local-2",
+    "executado_em": "2026-09-27 01:53:11.255056",
+    "teste": "consistencia_conclusao",
+    "fonte": "silver.interacao",
+    "valor": 100.0,
+    "limite": 90.0,
+    "aprovado": true
+  },
+  {
+    "execucao_id": "hop-cli-1",
+    "executado_em": "2026-09-27 15:08:35.961391",
+    "teste": "completude_titulo",
+    "fonte": "silver.conteudo",
+    "valor": 100.0,
+    "limite": 99.0,
+    "aprovado": true
+  },
+  {
+    "execucao_id": "hop-cli-1",
+    "executado_em": "2026-09-27 15:08:35.962075",
+    "teste": "consistencia_conclusao",
+    "fonte": "silver.interacao",
+    "valor": 100.0,
+    "limite": 90.0,
+    "aprovado": true
+  },
+  {
+    "execucao_id": "hop-cli-2",
+    "executado_em": "2026-09-27 15:08:50.292724",
+    "teste": "completude_titulo",
+    "fonte": "silver.conteudo",
+    "valor": 100.0,
+    "limite": 99.0,
+    "aprovado": true
+  },
+  {
+    "execucao_id": "hop-cli-2",
+    "executado_em": "2026-09-27 15:08:50.292793",
+    "teste": "consistencia_conclusao",
+    "fonte": "silver.interacao",
+    "valor": 100.0,
+    "limite": 90.0,
+    "aprovado": true
+  }
+]

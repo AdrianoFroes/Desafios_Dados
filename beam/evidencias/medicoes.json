@@ -1,0 +1,90 @@
+{
+  "execucao_id": "gold-local-1",
+  "volume_silver_interacao": 1000,
+  "parquet": {
+    "linhas": 1000,
+    "colunas_parquet": [
+      "interacao_id",
+      "usuario_id",
+      "conteudo_id",
+      "tipo_interacao",
+      "data_hora",
+      "tempo_consumido",
+      "percentual_conclusao",
+      "avaliacao_atribuida",
+      "origem",
+      "arquivo_origem",
+      "data_hora_ingestao",
+      "execucao_id",
+      "data_hora_padronizacao",
+      "ano",
+      "mes"
+    ],
+    "particoes": [
+      "ano=2026/mes=01",
+      "ano=2026/mes=02",
+      "ano=2026/mes=03",
+      "ano=2026/mes=04",
+      "ano=2026/mes=05",
+      "ano=2026/mes=06",
+      "ano=2026/mes=07",
+      "ano=2026/mes=08"
+    ],
+    "bytes_parquet": 66656,
+    "bytes_json": 438097,
+    "segundos_leitura_parquet": 0.15627,
+    "segundos_leitura_json": 0.007606,
+    "estrategia": "particao hive por ano e mes de data_hora",
+    "justificativa": "O consumo analitico filtra por periodo. A particao mensal permite poda de arquivo sem multiplicar pastas alem do que o recorte tem de meses.",
+    "limitacao": "O recorte do desafio tem poucos milhares de linhas. Nessa escala o Parquet pode nao ser mais rapido que o JSON; o ganho aparece quando a leitura passa a ignorar meses fora do filtro."
+  },
+  "beam": [
+    {
+      "runner": "DirectRunner",
+      "rotulo": "direct",
+      "linhas": 997,
+      "segundos": 3.411,
+      "argumentos": [
+        "--runner=DirectRunner"
+      ],
+      "saida": "dados/gold/parquet/engajamento_dia/direct",
+      "observacao": "A opcao informada foi --runner=DirectRunner. No Apache Beam 2.76 esse runner executa o pipeline no Prism local quando todas as transformacoes sao compativeis."
+    },
+    {
+      "runner": "PortableRunner",
+      "rotulo": "spark",
+      "linhas": 997,
+      "segundos": 3.297,
+      "argumentos": [
+        "--runner=PortableRunner",
+        "--job_endpoint=localhost:8099",
+        "--artifact_endpoint=localhost:8098",
+        "--environment_type=LOOPBACK"
+      ],
+      "saida": "dados/gold/parquet/engajamento_dia/spark",
+      "igual_ao_direct": true
+    }
+  ],
+  "spark": {
+    "executado": true,
+    "runner": "PortableRunner",
+    "rotulo": "spark",
+    "linhas": 997,
+    "segundos": 3.297,
+    "argumentos": [
+      "--runner=PortableRunner",
+      "--job_endpoint=localhost:8099",
+      "--artifact_endpoint=localhost:8098",
+      "--environment_type=LOOPBACK"
+    ],
+    "saida": "dados/gold/parquet/engajamento_dia/spark",
+    "igual_ao_direct": true
+  },
+  "comparacao_gold": {
+    "linhas_gold": 997,
+    "linhas_beam": 997,
+    "iguais": true
+  },
+  "qualidade": "qualidade/resultados/gold-local-1.json",
+  "regra": "conclusao = tipo conclusão OU percentual_conclusao >= 100"
+}

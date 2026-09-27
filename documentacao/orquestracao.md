@@ -1,6 +1,6 @@
 # Workflow orquestrador (RF22)
 
-O arquivo `hop/workflows/orquestrador.hwf` executa a carga na ordem Bronze, Silver, Qualidade, Gold e publicação de metadados. Qualidade e Gold (Estudante 2) e a publicação de metadados (Estudante 3) ainda não existem: cada um é uma ação que só escreve no log, marcada como `placeholder`, no ponto exato em que o pipeline real vai entrar.
+O arquivo `hop/workflows/orquestrador.hwf` executa a carga na ordem Bronze, Silver, Qualidade, Gold e publicação de metadados. Qualidade e Gold chamam `qualidade.aplicar`, `qualidade.bloquear_se_critico` e `gold.publicar`. A publicação de metadados (Estudante 3) ainda é uma ação de log, marcada como `placeholder`.
 
 ## Ordem e o que cada etapa faz
 
@@ -8,8 +8,8 @@ O arquivo `hop/workflows/orquestrador.hwf` executa a carga na ordem Bronze, Silv
 | --- | --- | --- |
 | 1 | Bronze | `bronze_catalogo`, `bronze_interacoes`, `bronze_comentarios` |
 | 2 | Silver | `silver_conteudo`, depois `silver_interacao` e `silver_comentario` (o catálogo precisa existir antes, por causa da chave estrangeira) |
-| 3 | Qualidade | ação `Qualidade (placeholder)` |
-| 4 | Gold | ação `Gold (placeholder)` |
+| 3 | Qualidade | `qualidade.hpl` grava os testes; `qualidade_gate.hpl` bloqueia a Gold se um teste crítico reprovar |
+| 4 | Gold | `gold.hpl` publica `gold.*` a partir da Silver |
 | 5 | Metadados | ação `Metadados (placeholder)` |
 
 Antes da primeira etapa, `orquestrador_inicio` define o `execucao_id`: usa o valor recebido pelo parâmetro `EXECUCAO_ID` ou, se vier vazio, gera um UUID. Esse mesmo valor é passado a todos os pipelines e gravado em `auditoria.etapa`.
@@ -30,7 +30,7 @@ Uma linha rejeitada pela regra de negócio não derruba o pipeline Silver: ela v
 | `sucesso com ressalvas` | Etapas ok, mas há registro `pendente` na quarentena desta execução | 0 |
 | `falha` | Erro crítico (banco fora, chave duplicada na carga, SQL da auditoria) | diferente de 0 (ação Abortar) |
 
-O placeholder não conta como ressalva. Ele registra `resultado=placeholder` na etapa, para ficar visível que Qualidade, Gold e Metadados ainda não rodaram de verdade. A ressalva vem só de linha rejeitada.
+O placeholder de metadados não conta como ressalva. Ele registra `resultado=placeholder` só nessa etapa. Qualidade e Gold registram `sucesso` ou `falha`. A ressalva do workflow continua vindo de linha pendente na quarentena. Um teste crítico reprovado na qualidade encerra o fluxo como falha e não publica a Gold.
 
 ## Log por etapa
 

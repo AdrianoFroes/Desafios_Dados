@@ -49,6 +49,11 @@
       "name" : "DIR_QUARENTENA",
       "value" : "/dados/quarentena",
       "description" : ""
+    },
+    {
+      "name" : "DIR_GOLD",
+      "value" : "/dados/gold",
+      "description" : "Amostras e Parquet da camada Gold (Estudante 2)."
     }
   ]
 }

@@ -8,3 +8,5 @@ pgvector>=0.2.5
 scikit-learn>=1.5.0
 python-dotenv>=1.0.1
 PyYAML>=6.0.1
+pyarrow>=17
+apache-beam==2.76.0

@@ -1,0 +1,5 @@
+formato,qtd_conteudos,total_interacoes,visualizacoes,inicios,conclusoes,taxa_conclusao_pct,avaliacao_media,tempo_medio_min,carga_horaria_media_min,execucao_id,publicado_em
+Artigo,272,262,100,50,42,28.0,4.5,9.4,17.3,hop-cli-1,2026-09-27 15:08:36.203900
+Curso,234,226,75,46,28,23.14,4.48,563.4,1145.0,hop-cli-1,2026-09-27 15:08:36.204274
+Podcast,256,250,95,42,40,29.2,4.43,29.9,56.2,hop-cli-1,2026-09-27 15:08:36.204370
+Vídeo,238,262,81,49,44,33.85,4.5,29.2,53.4,hop-cli-1,2026-09-27 15:08:36.204455

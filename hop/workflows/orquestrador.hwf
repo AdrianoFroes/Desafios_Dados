@@ -2,7 +2,7 @@
 <workflow>
   <name>orquestrador</name>
   <name_sync_with_filename>Y</name_sync_with_filename>
-  <description>Workflow orquestrador (RF22). Ordem: Bronze, Silver, Qualidade, Gold, Publicacao de metadados. Qualidade, Gold e Metadados sao placeholders ate a entrega dos colegas.</description>
+  <description>Workflow orquestrador (RF22). Ordem: Bronze, Silver, Qualidade, Gold, Publicacao de metadados. Qualidade e Gold publicam a camada analitica. Metadados segue como placeholder do Estudante 3.</description>
   <extended_description/>
   <workflow_version/>
   <created_user>-</created_user>
@@ -319,16 +319,61 @@
       <attributes_hac/>
     </action>
     <action>
-      <name>Qualidade (placeholder)</name>
-      <description>Substituir esta acao pelo pipeline de qualidade quando o Estudante 2 entregar.</description>
-      <type>WRITE_TO_LOG</type>
+      <name>Qualidade</name>
+      <description>Grava os cinco testes em qualidade.resultado.</description>
+      <type>PIPELINE</type>
       <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/qualidade.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <create_parent_folder>N</create_parent_folder>
+      <set_logfile>N</set_logfile>
+      <set_append_logfile>N</set_append_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
       <loglevel>Basic</loglevel>
-      <logsubject>qualidade</logsubject>
-      <logmessage>PLACEHOLDER etapa=qualidade resultado=placeholder execucao_id=${EXECUCAO_ID}. Aguardando a entrega do Estudante 2. Trocar esta acao pelo pipeline real.</logmessage>
+      <wait_until_finished>Y</wait_until_finished>
+      <parameters>
+        <pass_all_parameters>N</pass_all_parameters>
+        <parameter><name>EXECUCAO_ID</name><stream_name/><value>${EXECUCAO_ID}</value></parameter>
+      </parameters>
+      <run_configuration>local</run_configuration>
       <parallel>N</parallel>
       <xloc>1392</xloc>
       <yloc>224</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Gate qualidade</name>
+      <description>Interrompe a Gold quando um teste critico reprova. Pipeline separado para o resultado do teste ja estar commitado.</description>
+      <type>PIPELINE</type>
+      <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/qualidade_gate.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <create_parent_folder>N</create_parent_folder>
+      <set_logfile>N</set_logfile>
+      <set_append_logfile>N</set_append_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <wait_until_finished>Y</wait_until_finished>
+      <parameters>
+        <pass_all_parameters>N</pass_all_parameters>
+        <parameter><name>EXECUCAO_ID</name><stream_name/><value>${EXECUCAO_ID}</value></parameter>
+      </parameters>
+      <run_configuration>local</run_configuration>
+      <parallel>N</parallel>
+      <xloc>1392</xloc>
+      <yloc>304</yloc>
       <attributes_hac/>
     </action>
     <action>
@@ -336,7 +381,7 @@
       <description/>
       <type>SQL</type>
       <attributes/>
-      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'qualidade', 'fim', 'placeholder');</sql>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'qualidade', 'fim', 'sucesso');</sql>
       <connection>pg_desafio</connection>
       <useVariableSubstitution>Y</useVariableSubstitution>
       <sqlfromfile>N</sqlfromfile>
@@ -364,13 +409,29 @@
       <attributes_hac/>
     </action>
     <action>
-      <name>Gold (placeholder)</name>
-      <description>Substituir esta acao pelo pipeline gold quando o Estudante 2 entregar.</description>
-      <type>WRITE_TO_LOG</type>
+      <name>Gold</name>
+      <description>Publica gold.* a partir da Silver. Recusa o lote se a qualidade critica nao liberou.</description>
+      <type>PIPELINE</type>
       <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/gold.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <create_parent_folder>N</create_parent_folder>
+      <set_logfile>N</set_logfile>
+      <set_append_logfile>N</set_append_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
       <loglevel>Basic</loglevel>
-      <logsubject>gold</logsubject>
-      <logmessage>PLACEHOLDER etapa=gold resultado=placeholder execucao_id=${EXECUCAO_ID}. Aguardando a entrega do Estudante 2. Trocar esta acao pelo pipeline real.</logmessage>
+      <wait_until_finished>Y</wait_until_finished>
+      <parameters>
+        <pass_all_parameters>N</pass_all_parameters>
+        <parameter><name>EXECUCAO_ID</name><stream_name/><value>${EXECUCAO_ID}</value></parameter>
+      </parameters>
+      <run_configuration>local</run_configuration>
       <parallel>N</parallel>
       <xloc>496</xloc>
       <yloc>384</yloc>
@@ -381,7 +442,7 @@
       <description/>
       <type>SQL</type>
       <attributes/>
-      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'gold', 'fim', 'placeholder');</sql>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'gold', 'fim', 'sucesso');</sql>
       <connection>pg_desafio</connection>
       <useVariableSubstitution>Y</useVariableSubstitution>
       <sqlfromfile>N</sqlfromfile>
@@ -506,6 +567,38 @@
       <attributes_hac/>
     </action>
     <action>
+      <name>Falha qualidade</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'qualidade', 'fim', 'falha');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>240</xloc>
+      <yloc>704</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Falha gold</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'gold', 'fim', 'falha');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>960</xloc>
+      <yloc>544</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
       <name>Falha silver</name>
       <description/>
       <type>SQL</type>
@@ -570,14 +663,18 @@
     <hop><from>Silver comentario</from><to>Falha silver</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Fim silver</from><to>Inicio qualidade</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Fim silver</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
-    <hop><from>Inicio qualidade</from><to>Qualidade (placeholder)</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio qualidade</from><to>Qualidade</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Inicio qualidade</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
-    <hop><from>Qualidade (placeholder)</from><to>Fim qualidade</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Qualidade</from><to>Gate qualidade</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Qualidade</from><to>Falha qualidade</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Gate qualidade</from><to>Fim qualidade</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Gate qualidade</from><to>Falha qualidade</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Fim qualidade</from><to>Inicio gold</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Fim qualidade</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
-    <hop><from>Inicio gold</from><to>Gold (placeholder)</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio gold</from><to>Gold</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Inicio gold</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
-    <hop><from>Gold (placeholder)</from><to>Fim gold</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Gold</from><to>Fim gold</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Gold</from><to>Falha gold</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Fim gold</from><to>Inicio metadados</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Fim gold</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Inicio metadados</from><to>Metadados (placeholder)</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
@@ -590,6 +687,8 @@
     <hop><from>Resultado final</from><to>Sucesso</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Falha bronze</from><to>Registrar falha</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
     <hop><from>Falha silver</from><to>Registrar falha</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
+    <hop><from>Falha qualidade</from><to>Registrar falha</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
+    <hop><from>Falha gold</from><to>Registrar falha</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
     <hop><from>Registrar falha</from><to>Abortar</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
   </hops>
   <notepads/>
