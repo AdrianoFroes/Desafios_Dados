@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow>
+  <name>orquestrador</name>
+  <name_sync_with_filename>Y</name_sync_with_filename>
+  <description>Workflow orquestrador (RF22). Ordem: Bronze, Silver, Qualidade, Gold, Publicacao de metadados. Qualidade, Gold e Metadados sao placeholders ate a entrega dos colegas.</description>
+  <extended_description/>
+  <workflow_version/>
+  <created_user>-</created_user>
+  <created_date>2026/09/27 00:15:00.000</created_date>
+  <modified_user>-</modified_user>
+  <modified_date>2026/09/27 00:15:00.000</modified_date>
+  <parameters>
+    <parameter>
+      <name>EXECUCAO_ID</name>
+      <default_value/>
+      <description>Opcional. Vazio faz o workflow gerar um UUID. O cron e a execucao manual podem informar um valor proprio.</description>
+    </parameter>
+  </parameters>
+  <actions>
+    <action>
+      <name>Start</name>
+      <description/>
+      <type>SPECIAL</type>
+      <attributes/>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>60</intervalMinutes>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <xloc>48</xloc>
+      <yloc>64</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Gerar execucao_id</name>
+      <description/>
+      <type>PIPELINE</type>
+      <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/orquestrador_inicio.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <create_parent_folder>N</create_parent_folder>
+      <set_logfile>N</set_logfile>
+      <set_append_logfile>N</set_append_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <wait_until_finished>Y</wait_until_finished>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+        <parameter><name>EXECUCAO_ID</name><stream_name/><value>${EXECUCAO_ID}</value></parameter>
+      </parameters>
+      <run_configuration>local</run_configuration>
+      <parallel>N</parallel>
+      <xloc>256</xloc>
+      <yloc>64</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Inicio bronze</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento) VALUES ('${EXECUCAO_ID}', 'bronze', 'inicio');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>480</xloc>
+      <yloc>64</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Bronze catalogo</name>
+      <description/>
+      <type>PIPELINE</type>
+      <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/bronze_catalogo.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <create_parent_folder>N</create_parent_folder>
+      <set_logfile>N</set_logfile>
+      <set_append_logfile>N</set_append_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <wait_until_finished>Y</wait_until_finished>
+      <parameters>
+        <pass_all_parameters>N</pass_all_parameters>
+        <parameter><name>EXECUCAO_ID</name><stream_name/><value>${EXECUCAO_ID}</value></parameter>
+      </parameters>
+      <run_configuration>local</run_configuration>
+      <parallel>N</parallel>
+      <xloc>704</xloc>
+      <yloc>64</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Bronze interacoes</name>
+      <description/>
+      <type>PIPELINE</type>
+      <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/bronze_interacoes.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <create_parent_folder>N</create_parent_folder>
+      <set_logfile>N</set_logfile>
+      <set_append_logfile>N</set_append_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <wait_until_finished>Y</wait_until_finished>
+      <parameters>
+        <pass_all_parameters>N</pass_all_parameters>
+        <parameter><name>EXECUCAO_ID</name><stream_name/><value>${EXECUCAO_ID}</value></parameter>
+      </parameters>
+      <run_configuration>local</run_configuration>
+      <parallel>N</parallel>
+      <xloc>928</xloc>
+      <yloc>64</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Bronze comentarios</name>
+      <description/>
+      <type>PIPELINE</type>
+      <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/bronze_comentarios.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <create_parent_folder>N</create_parent_folder>
+      <set_logfile>N</set_logfile>
+      <set_append_logfile>N</set_append_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <wait_until_finished>Y</wait_until_finished>
+      <parameters>
+        <pass_all_parameters>N</pass_all_parameters>
+        <parameter><name>EXECUCAO_ID</name><stream_name/><value>${EXECUCAO_ID}</value></parameter>
+      </parameters>
+      <run_configuration>local</run_configuration>
+      <parallel>N</parallel>
+      <xloc>1152</xloc>
+      <yloc>64</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Fim bronze</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'bronze', 'fim', 'sucesso');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>1376</xloc>
+      <yloc>64</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Inicio silver</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento) VALUES ('${EXECUCAO_ID}', 'silver', 'inicio');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>48</xloc>
+      <yloc>224</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Silver conteudo</name>
+      <description/>
+      <type>PIPELINE</type>
+      <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/silver_conteudo.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <create_parent_folder>N</create_parent_folder>
+      <set_logfile>N</set_logfile>
+      <set_append_logfile>N</set_append_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <wait_until_finished>Y</wait_until_finished>
+      <parameters>
+        <pass_all_parameters>N</pass_all_parameters>
+        <parameter><name>EXECUCAO_ID</name><stream_name/><value>${EXECUCAO_ID}</value></parameter>
+      </parameters>
+      <run_configuration>local</run_configuration>
+      <parallel>N</parallel>
+      <xloc>272</xloc>
+      <yloc>224</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Silver interacao</name>
+      <description/>
+      <type>PIPELINE</type>
+      <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/silver_interacao.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <create_parent_folder>N</create_parent_folder>
+      <set_logfile>N</set_logfile>
+      <set_append_logfile>N</set_append_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <wait_until_finished>Y</wait_until_finished>
+      <parameters>
+        <pass_all_parameters>N</pass_all_parameters>
+        <parameter><name>EXECUCAO_ID</name><stream_name/><value>${EXECUCAO_ID}</value></parameter>
+      </parameters>
+      <run_configuration>local</run_configuration>
+      <parallel>N</parallel>
+      <xloc>496</xloc>
+      <yloc>224</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Silver comentario</name>
+      <description/>
+      <type>PIPELINE</type>
+      <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/silver_comentario.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <create_parent_folder>N</create_parent_folder>
+      <set_logfile>N</set_logfile>
+      <set_append_logfile>N</set_append_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <wait_until_finished>Y</wait_until_finished>
+      <parameters>
+        <pass_all_parameters>N</pass_all_parameters>
+        <parameter><name>EXECUCAO_ID</name><stream_name/><value>${EXECUCAO_ID}</value></parameter>
+      </parameters>
+      <run_configuration>local</run_configuration>
+      <parallel>N</parallel>
+      <xloc>720</xloc>
+      <yloc>224</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Fim silver</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'silver', 'fim', 'sucesso');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>944</xloc>
+      <yloc>224</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Inicio qualidade</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento) VALUES ('${EXECUCAO_ID}', 'qualidade', 'inicio');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>1168</xloc>
+      <yloc>224</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Qualidade (placeholder)</name>
+      <description>Substituir esta acao pelo pipeline de qualidade quando o Estudante 2 entregar.</description>
+      <type>WRITE_TO_LOG</type>
+      <attributes/>
+      <loglevel>Basic</loglevel>
+      <logsubject>qualidade</logsubject>
+      <logmessage>PLACEHOLDER etapa=qualidade resultado=placeholder execucao_id=${EXECUCAO_ID}. Aguardando a entrega do Estudante 2. Trocar esta acao pelo pipeline real.</logmessage>
+      <parallel>N</parallel>
+      <xloc>1392</xloc>
+      <yloc>224</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Fim qualidade</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'qualidade', 'fim', 'placeholder');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>48</xloc>
+      <yloc>384</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Inicio gold</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento) VALUES ('${EXECUCAO_ID}', 'gold', 'inicio');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>272</xloc>
+      <yloc>384</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Gold (placeholder)</name>
+      <description>Substituir esta acao pelo pipeline gold quando o Estudante 2 entregar.</description>
+      <type>WRITE_TO_LOG</type>
+      <attributes/>
+      <loglevel>Basic</loglevel>
+      <logsubject>gold</logsubject>
+      <logmessage>PLACEHOLDER etapa=gold resultado=placeholder execucao_id=${EXECUCAO_ID}. Aguardando a entrega do Estudante 2. Trocar esta acao pelo pipeline real.</logmessage>
+      <parallel>N</parallel>
+      <xloc>496</xloc>
+      <yloc>384</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Fim gold</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'gold', 'fim', 'placeholder');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>720</xloc>
+      <yloc>384</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Inicio metadados</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento) VALUES ('${EXECUCAO_ID}', 'metadados', 'inicio');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>944</xloc>
+      <yloc>384</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Metadados (placeholder)</name>
+      <description>Substituir esta acao pelo pipeline de publicacao de metadados quando o Estudante 3 entregar.</description>
+      <type>WRITE_TO_LOG</type>
+      <attributes/>
+      <loglevel>Basic</loglevel>
+      <logsubject>metadados</logsubject>
+      <logmessage>PLACEHOLDER etapa=metadados resultado=placeholder execucao_id=${EXECUCAO_ID}. Aguardando a entrega do Estudante 3. Trocar esta acao pelo pipeline real.</logmessage>
+      <parallel>N</parallel>
+      <xloc>1168</xloc>
+      <yloc>384</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Fim metadados</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'metadados', 'fim', 'placeholder');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>1392</xloc>
+      <yloc>384</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Resumo da execucao</name>
+      <description/>
+      <type>PIPELINE</type>
+      <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/orquestrador_resumo.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <create_parent_folder>N</create_parent_folder>
+      <set_logfile>N</set_logfile>
+      <set_append_logfile>N</set_append_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <wait_until_finished>Y</wait_until_finished>
+      <parameters>
+        <pass_all_parameters>N</pass_all_parameters>
+        <parameter><name>EXECUCAO_ID</name><stream_name/><value>${EXECUCAO_ID}</value></parameter>
+      </parameters>
+      <run_configuration>local</run_configuration>
+      <parallel>N</parallel>
+      <xloc>48</xloc>
+      <yloc>544</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Resultado final</name>
+      <description/>
+      <type>WRITE_TO_LOG</type>
+      <attributes/>
+      <loglevel>Basic</loglevel>
+      <logsubject>resultado</logsubject>
+      <logmessage>FIM workflow resultado=${RESULTADO_FINAL} execucao_id=${EXECUCAO_ID}</logmessage>
+      <parallel>N</parallel>
+      <xloc>304</xloc>
+      <yloc>544</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Sucesso</name>
+      <description/>
+      <type>SUCCESS</type>
+      <attributes/>
+      <parallel>N</parallel>
+      <xloc>528</xloc>
+      <yloc>544</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Falha bronze</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'bronze', 'fim', 'falha');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>480</xloc>
+      <yloc>704</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Falha silver</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'silver', 'fim', 'falha');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>720</xloc>
+      <yloc>704</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Registrar falha</name>
+      <description/>
+      <type>WRITE_TO_LOG</type>
+      <attributes/>
+      <loglevel>Error</loglevel>
+      <logsubject>falha</logsubject>
+      <logmessage>FIM workflow resultado=falha execucao_id=${EXECUCAO_ID}. Etapa critica interrompida; as etapas dependentes nao foram executadas.</logmessage>
+      <parallel>N</parallel>
+      <xloc>960</xloc>
+      <yloc>704</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>Abortar</name>
+      <description/>
+      <type>ABORT</type>
+      <attributes/>
+      <loglevel>Error</loglevel>
+      <parallel>N</parallel>
+      <xloc>1184</xloc>
+      <yloc>704</yloc>
+      <attributes_hac/>
+    </action>
+  </actions>
+  <hops>
+    <hop><from>Start</from><to>Gerar execucao_id</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
+    <hop><from>Gerar execucao_id</from><to>Inicio bronze</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Gerar execucao_id</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio bronze</from><to>Bronze catalogo</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio bronze</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Bronze catalogo</from><to>Bronze interacoes</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Bronze catalogo</from><to>Falha bronze</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Bronze interacoes</from><to>Bronze comentarios</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Bronze interacoes</from><to>Falha bronze</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Bronze comentarios</from><to>Fim bronze</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Bronze comentarios</from><to>Falha bronze</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Fim bronze</from><to>Inicio silver</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Fim bronze</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio silver</from><to>Silver conteudo</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio silver</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Silver conteudo</from><to>Silver interacao</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Silver conteudo</from><to>Falha silver</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Silver interacao</from><to>Silver comentario</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Silver interacao</from><to>Falha silver</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Silver comentario</from><to>Fim silver</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Silver comentario</from><to>Falha silver</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Fim silver</from><to>Inicio qualidade</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Fim silver</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio qualidade</from><to>Qualidade (placeholder)</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio qualidade</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Qualidade (placeholder)</from><to>Fim qualidade</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Fim qualidade</from><to>Inicio gold</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Fim qualidade</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio gold</from><to>Gold (placeholder)</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio gold</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Gold (placeholder)</from><to>Fim gold</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Fim gold</from><to>Inicio metadados</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Fim gold</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio metadados</from><to>Metadados (placeholder)</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio metadados</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Metadados (placeholder)</from><to>Fim metadados</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Fim metadados</from><to>Resumo da execucao</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Fim metadados</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Resumo da execucao</from><to>Resultado final</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Resumo da execucao</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Resultado final</from><to>Sucesso</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Falha bronze</from><to>Registrar falha</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
+    <hop><from>Falha silver</from><to>Registrar falha</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
+    <hop><from>Registrar falha</from><to>Abortar</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
+  </hops>
+  <notepads/>
+  <attributes/>
+</workflow>
