@@ -1,0 +1,22 @@
+{
+  "authenticationDatabaseName": "",
+  "journaled": true,
+  "appName": "",
+  "dbName": "${DB_NAME}",
+  "authenticationUser": "",
+  "connectTimeoutMs": "",
+  "writeConcern": "",
+  "authenticationPassword": "Encrypted ",
+  "connectionType": "STANDARD",
+  "usingAllReplicaSetMembers": false,
+  "usingSslSocketFactory": false,
+  "replicationTimeoutMs": "",
+  "hostname": "${MONGO_HOST}",
+  "virtualPath": "",
+  "port": "${MONGO_PORT}",
+  "name": "mongo_desafio",
+  "readPreference": "PRIMARY",
+  "socketTimeoutMs": "",
+  "readPrefTagSets": "",
+  "authenticationMechanism": "SCRAM_SHA_256"
+}

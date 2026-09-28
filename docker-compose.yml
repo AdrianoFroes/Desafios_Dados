@@ -59,7 +59,28 @@ services:
       - .:/usr/share/nginx/html:ro
     restart: unless-stopped
 
+  apache_hop:
+    image: apache/hop-web:2.19.0
+    container_name: desafio_apache_hop
+    ports:
+      - "8086:8080"
+    env_file:
+      - .env
+    environment:
+      - HOP_CONFIG_FOLDER=/files/config
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - ./hop:/files
+      - ./dados:/dados
+    depends_on:
+      - postgres
+      - mongodb
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   mongo_data:
   superset_home:
+  hop_config:
+  hop_audit:

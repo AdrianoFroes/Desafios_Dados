@@ -10,3 +10,7 @@ logs/
 .cache/
 dashboard/evidencias/*.png
 dashboard/evidencias/*.jpg
+
+dados/bronze/
+dados/silver/
+dados/quarentena/

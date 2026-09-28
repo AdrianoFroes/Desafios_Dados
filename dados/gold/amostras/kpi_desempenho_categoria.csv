@@ -1,0 +1,33 @@
+categoria,tipo,qtd_conteudos,total_interacoes,visualizacoes,inicios,conclusoes,taxa_conclusao_pct,avaliacao_media,tempo_medio_min,execucao_id,publicado_em
+Banco de Dados,Artigo,41,39,17,6,6,26.09,4.14,10.3,hop-cli-1,2026-09-27 15:08:36.200127
+Banco de Dados,Curso,28,28,9,9,6,33.33,4.5,462.7,hop-cli-1,2026-09-27 15:08:36.201487
+Banco de Dados,Podcast,26,26,6,4,2,20.0,4.69,28.4,hop-cli-1,2026-09-27 15:08:36.201507
+Banco de Dados,Vídeo,29,35,11,7,9,50.0,4.07,31.0,hop-cli-1,2026-09-27 15:08:36.201524
+Business Intelligence,Artigo,29,30,11,8,4,21.05,4.0,9.8,hop-cli-1,2026-09-27 15:08:36.201539
+Business Intelligence,Curso,31,38,14,6,3,15.0,4.6,534.6,hop-cli-1,2026-09-27 15:08:36.201559
+Business Intelligence,Podcast,42,32,13,4,7,41.18,4.56,31.3,hop-cli-1,2026-09-27 15:08:36.201576
+Business Intelligence,Vídeo,34,44,14,8,7,31.82,4.78,29.5,hop-cli-1,2026-09-27 15:08:36.201595
+Ciência de Dados,Artigo,29,35,11,6,8,47.06,4.38,8.8,hop-cli-1,2026-09-27 15:08:36.201609
+Ciência de Dados,Curso,27,27,7,8,3,20.0,4.3,502.9,hop-cli-1,2026-09-27 15:08:36.201621
+Ciência de Dados,Podcast,28,29,12,6,4,22.22,4.22,34.8,hop-cli-1,2026-09-27 15:08:36.201633
+Ciência de Dados,Vídeo,30,29,9,4,2,15.38,4.36,33.0,hop-cli-1,2026-09-27 15:08:36.201646
+DevOps & Cloud,Artigo,32,39,9,6,7,46.67,4.71,8.5,hop-cli-1,2026-09-27 15:08:36.201662
+DevOps & Cloud,Curso,29,21,6,5,3,27.27,3.75,635.0,hop-cli-1,2026-09-27 15:08:36.201673
+DevOps & Cloud,Podcast,34,39,11,6,8,47.06,4.11,33.1,hop-cli-1,2026-09-27 15:08:36.201715
+DevOps & Cloud,Vídeo,37,42,9,9,8,44.44,4.71,27.6,hop-cli-1,2026-09-27 15:08:36.201735
+Engenharia de Dados,Artigo,25,20,9,4,2,15.38,4.83,8.2,hop-cli-1,2026-09-27 15:08:36.201746
+Engenharia de Dados,Curso,35,39,17,5,5,22.73,4.85,654.6,hop-cli-1,2026-09-27 15:08:36.201761
+Engenharia de Dados,Podcast,39,34,18,6,2,8.33,4.75,24.2,hop-cli-1,2026-09-27 15:08:36.201775
+Engenharia de Dados,Vídeo,26,28,11,5,8,50.0,4.56,23.2,hop-cli-1,2026-09-27 15:08:36.201787
+Inteligência Artificial,Artigo,43,34,15,5,7,35.0,4.45,11.1,hop-cli-1,2026-09-27 15:08:36.201801
+Inteligência Artificial,Curso,27,22,2,3,1,20.0,4.45,450.1,hop-cli-1,2026-09-27 15:08:36.201812
+Inteligência Artificial,Podcast,38,41,15,7,7,31.82,4.5,28.1,hop-cli-1,2026-09-27 15:08:36.201828
+Inteligência Artificial,Vídeo,29,31,7,5,4,33.33,4.64,30.1,hop-cli-1,2026-09-27 15:08:36.201839
+Programação & Software,Artigo,34,28,10,6,4,25.0,4.8,8.7,hop-cli-1,2026-09-27 15:08:36.201852
+Programação & Software,Curso,22,21,7,5,4,33.33,4.43,497.6,hop-cli-1,2026-09-27 15:08:36.201861
+Programação & Software,Podcast,21,24,8,5,8,61.54,4.27,28.8,hop-cli-1,2026-09-27 15:08:36.201881
+Programação & Software,Vídeo,28,31,11,5,5,31.25,4.31,27.5,hop-cli-1,2026-09-27 15:08:36.201901
+Segurança & Governança,Artigo,39,37,18,9,4,14.81,4.75,9.0,hop-cli-1,2026-09-27 15:08:36.201917
+Segurança & Governança,Curso,35,30,13,5,3,16.67,4.7,708.5,hop-cli-1,2026-09-27 15:08:36.201930
+Segurança & Governança,Podcast,28,25,12,4,2,12.5,4.75,30.5,hop-cli-1,2026-09-27 15:08:36.201941
+Segurança & Governança,Vídeo,25,22,9,6,1,6.67,4.5,32.0,hop-cli-1,2026-09-27 15:08:36.201951

@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+  <info>
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <pipeline_type>Normal</pipeline_type>
+    <pipeline_status>-1</pipeline_status>
+    <parameters>
+      <parameter>
+        <name>EXECUCAO_ID</name>
+        <description>Identificador unico (UUID) da execucao Silver. Em producao e propagado pelo workflow orquestrador (RF22). Em teste manual, informe via Run Options antes de executar. Este pipeline depende de silver_conteudo ja ter sido executado (valida conteudo_id contra silver.conteudo).</description>
+        <default_value/>
+      </parameter>
+    </parameters>
+    <name>silver_comentario</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <created_user>-</created_user>
+    <modified_user>-</modified_user>
+    <created_date>2026/09/26 23:20:00.000</created_date>
+    <modified_date>2026/09/26 23:20:00.000</modified_date>
+  </info>
+  <transform>
+    <type>TableInput</type>
+    <name>Ler Bronze e aplicar regras</name>
+    <connection>pg_desafio</connection>
+    <execute_each_row>N</execute_each_row>
+    <limit>0</limit>
+    <lookup/>
+    <sql><![CDATA[
+WITH base AS (
+  SELECT
+    b.usuario_id                            AS usuario_id_raw,
+    b.conteudo_id                           AS conteudo_id_raw,
+    NULLIF(BTRIM(b.avaliacao), '')           AS avaliacao_raw,
+    NULLIF(BTRIM(b.comentario), '')          AS comentario,
+    b.tags                                   AS tags_raw,
+    NULLIF(BTRIM(b.data), '')                AS data_raw,
+    b.origem, b.arquivo_origem, b.data_hora_ingestao, b.execucao_id,
+    to_jsonb(b) AS payload_original,
+    b.ctid AS linha_ctid
+  FROM bronze.comentarios b
+),
+padronizado AS (
+  SELECT *,
+    CASE WHEN BTRIM(usuario_id_raw) ~ '^\d+$' AND BTRIM(usuario_id_raw)::BIGINT > 0
+      THEN BTRIM(usuario_id_raw)::INTEGER ELSE NULL END AS usuario_id,
+    CASE WHEN BTRIM(conteudo_id_raw) ~ '^\d+$'
+      THEN BTRIM(conteudo_id_raw)::INTEGER ELSE NULL END AS conteudo_id,
+    CASE WHEN avaliacao_raw ~ '^-?\d+(\.\d+)?$'
+      THEN ROUND(avaliacao_raw::NUMERIC)::INTEGER ELSE NULL END AS avaliacao_numero,
+    CASE WHEN data_raw ~ '^\d{4}-\d{2}-\d{2}$'
+      THEN data_raw::DATE ELSE NULL END AS data,
+    silver.tags_normalizadas(tags_raw) AS tags
+  FROM base
+),
+refs AS (
+  SELECT a.*, sc.conteudo_id AS conteudo_id_existe
+  FROM padronizado a
+  LEFT JOIN silver.conteudo sc ON sc.conteudo_id = a.conteudo_id
+),
+dedupe AS (
+  SELECT *,
+    ROW_NUMBER() OVER (
+      PARTITION BY usuario_id, conteudo_id, data
+      ORDER BY data_hora_ingestao, linha_ctid
+    ) AS ocorrencia
+  FROM refs
+),
+regras AS (
+  SELECT *,
+    CASE
+      WHEN usuario_id IS NULL THEN 'USUARIO_INVALIDO'
+      WHEN conteudo_id IS NULL OR conteudo_id_existe IS NULL THEN 'REFERENCIA_INEXISTENTE'
+      WHEN ocorrencia > 1 THEN 'DUPLICADO'
+      WHEN data IS NULL THEN 'DATA_INVALIDA'
+      WHEN avaliacao_raw IS NOT NULL AND (avaliacao_numero IS NULL OR avaliacao_numero < 1 OR avaliacao_numero > 5)
+        THEN 'AVALIACAO_FORA_DA_FAIXA'
+      ELSE NULL
+    END AS regra_violada
+  FROM dedupe
+)
+SELECT
+  usuario_id, conteudo_id, avaliacao_numero AS avaliacao, comentario, tags, data,
+  origem, arquivo_origem, data_hora_ingestao, execucao_id,
+  regra_violada,
+  CASE regra_violada
+    WHEN 'USUARIO_INVALIDO' THEN 'usuario_id ausente, nao numerico ou nao positivo na origem'
+    WHEN 'REFERENCIA_INEXISTENTE' THEN 'conteudo_id ausente, nao numerico ou sem correspondencia em silver.conteudo'
+    WHEN 'DUPLICADO' THEN 'chave de negocio (usuario_id, conteudo_id, data) duplicada no Bronze; mantida apenas a primeira ocorrencia'
+    WHEN 'DATA_INVALIDA' THEN 'data ilegivel ou fora do formato esperado'
+    WHEN 'AVALIACAO_FORA_DA_FAIXA' THEN 'avaliacao ilegivel ou fora da faixa 1-5'
+    ELSE NULL
+  END AS mensagem,
+  ('comentarios:usuario_id=' || COALESCE(usuario_id_raw, 'NULL')
+    || ',conteudo_id=' || COALESCE(conteudo_id_raw, 'NULL')
+    || ',data=' || COALESCE(data_raw, 'NULL')) AS registro_id,
+  payload_original::text AS payload_original
+FROM regras
+]]></sql>
+    <sql_from_file/>
+    <variables_active>Y</variables_active>
+    <specify_fields>N</specify_fields>
+    <fields>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>48</xloc>
+      <yloc>224</yloc>
+    </GUI>
+    <description/>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+  </transform>
+  <transform>
+    <type>GetVariable</type>
+    <name>Get Variables</name>
+    <fields>
+      <field>
+        <name>execucao_id_silver</name>
+        <variable>${EXECUCAO_ID}</variable>
+        <type>String</type>
+        <format/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <currency/>
+        <decimal/>
+        <group/>
+        <trim_type>none</trim_type>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>224</xloc>
+      <yloc>224</yloc>
+    </GUI>
+    <description/>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+  </transform>
+  <transform>
+    <type>FilterRows</type>
+    <name>Aprovado ou quarentena?</name>
+    <send_true_to>Gravar quarentena</send_true_to>
+    <send_false_to>Gravar Silver</send_false_to>
+    <compare>
+      <condition>
+        <negated>N</negated>
+        <leftvalue>regra_violada</leftvalue>
+        <function>IS NOT NULL</function>
+        <rightvalue/>
+      </condition>
+    </compare>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>400</xloc>
+      <yloc>224</yloc>
+    </GUI>
+    <description/>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+  </transform>
+  <transform>
+    <type>TableOutput</type>
+    <name>Gravar Silver</name>
+    <connection>pg_desafio</connection>
+    <schema>silver</schema>
+    <table>comentario</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <only_when_have_rows>N</only_when_have_rows>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <specify_fields>Y</specify_fields>
+    <auto_update_table_structure>N</auto_update_table_structure>
+    <always_drop_and_recreate>N</always_drop_and_recreate>
+    <add_columns>N</add_columns>
+    <drop_columns>N</drop_columns>
+    <change_column_types>N</change_column_types>
+    <fields>
+      <field>
+        <stream_name>usuario_id</stream_name>
+        <column_name>usuario_id</column_name>
+      </field>
+      <field>
+        <stream_name>conteudo_id</stream_name>
+        <column_name>conteudo_id</column_name>
+      </field>
+      <field>
+        <stream_name>avaliacao</stream_name>
+        <column_name>avaliacao</column_name>
+      </field>
+      <field>
+        <stream_name>comentario</stream_name>
+        <column_name>comentario</column_name>
+      </field>
+      <field>
+        <stream_name>tags</stream_name>
+        <column_name>tags</column_name>
+      </field>
+      <field>
+        <stream_name>data</stream_name>
+        <column_name>data</column_name>
+      </field>
+      <field>
+        <stream_name>origem</stream_name>
+        <column_name>origem</column_name>
+      </field>
+      <field>
+        <stream_name>arquivo_origem</stream_name>
+        <column_name>arquivo_origem</column_name>
+      </field>
+      <field>
+        <stream_name>data_hora_ingestao</stream_name>
+        <column_name>data_hora_ingestao</column_name>
+      </field>
+      <field>
+        <stream_name>execucao_id</stream_name>
+        <column_name>execucao_id</column_name>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>640</xloc>
+      <yloc>128</yloc>
+    </GUI>
+    <description/>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+  </transform>
+  <transform>
+    <type>TextFileOutput</type>
+    <name>Arquivo Silver</name>
+    <compression>None</compression>
+    <create_parent_folder>Y</create_parent_folder>
+    <separator>,</separator>
+    <enclosure>"</enclosure>
+    <enclosure_forced>N</enclosure_forced>
+    <enclosure_fix_disabled>N</enclosure_fix_disabled>
+    <header>Y</header>
+    <footer>N</footer>
+    <format>Unix</format>
+    <encoding>UTF-8</encoding>
+    <endedLine/>
+    <fileNameInField>N</fileNameInField>
+    <fileNameField/>
+    <ignore_fields>N</ignore_fields>
+    <file>
+      <name>${DIR_SILVER}/comentario_silver_${EXECUCAO_ID}</name>
+      <do_not_open_new_file_init>N</do_not_open_new_file_init>
+      <extension>csv</extension>
+      <append>N</append>
+      <split>N</split>
+      <haspartno>N</haspartno>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <SpecifyFormat>N</SpecifyFormat>
+      <date_time_format/>
+      <add_to_result_filenames>Y</add_to_result_filenames>
+      <pad>N</pad>
+      <fast_dump>N</fast_dump>
+      <splitevery>0</splitevery>
+    </file>
+    <fields>
+      <field>
+        <name>usuario_id</name>
+        <type>String</type>
+        <format/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>none</trim_type>
+        <roundingType>half_even</roundingType>
+      </field>
+      <field>
+        <name>conteudo_id</name>
+        <type>String</type>
+        <format/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>none</trim_type>
+        <roundingType>half_even</roundingType>
+      </field>
+      <field>
+        <name>avaliacao</name>
+        <type>String</type>
+        <format/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>none</trim_type>
+        <roundingType>half_even</roundingType>
+      </field>
+      <field>
+        <name>comentario</name>
+        <type>String</type>
+        <format/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>none</trim_type>
+        <roundingType>half_even</roundingType>
+      </field>
+      <field>
+        <name>tags</name>
+        <type>String</type>
+        <format/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>none</trim_type>
+        <roundingType>half_even</roundingType>
+      </field>
+      <field>
+        <name>data</name>
+        <type>String</type>
+        <format/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>none</trim_type>
+        <roundingType>half_even</roundingType>
+      </field>
+      <field>
+        <name>origem</name>
+        <type>String</type>
+        <format/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>none</trim_type>
+        <roundingType>half_even</roundingType>
+      </field>
+      <field>
+        <name>arquivo_origem</name>
+        <type>String</type>
+        <format/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>none</trim_type>
+        <roundingType>half_even</roundingType>
+      </field>
+      <field>
+        <name>data_hora_ingestao</name>
+        <type>String</type>
+        <format/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>none</trim_type>
+        <roundingType>half_even</roundingType>
+      </field>
+      <field>
+        <name>execucao_id</name>
+        <type>String</type>
+        <format/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <trim_type>none</trim_type>
+        <roundingType>half_even</roundingType>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>640</xloc>
+      <yloc>192</yloc>
+    </GUI>
+    <description/>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+  </transform>
+  <transform>
+    <type>TableOutput</type>
+    <name>Gravar quarentena</name>
+    <connection>pg_desafio</connection>
+    <schema>quarentena</schema>
+    <table>registro</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <only_when_have_rows>N</only_when_have_rows>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <specify_fields>Y</specify_fields>
+    <auto_update_table_structure>N</auto_update_table_structure>
+    <always_drop_and_recreate>N</always_drop_and_recreate>
+    <add_columns>N</add_columns>
+    <drop_columns>N</drop_columns>
+    <change_column_types>N</change_column_types>
+    <fields>
+      <field>
+        <stream_name>registro_id</stream_name>
+        <column_name>registro_id</column_name>
+      </field>
+      <field>
+        <stream_name>origem</stream_name>
+        <column_name>origem</column_name>
+      </field>
+      <field>
+        <stream_name>regra_violada</stream_name>
+        <column_name>regra_violada</column_name>
+      </field>
+      <field>
+        <stream_name>mensagem</stream_name>
+        <column_name>mensagem</column_name>
+      </field>
+      <field>
+        <stream_name>execucao_id_silver</stream_name>
+        <column_name>execucao_id</column_name>
+      </field>
+      <field>
+        <stream_name>payload_original</stream_name>
+        <column_name>payload_original</column_name>
+      </field>
+    </fields>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>640</xloc>
+      <yloc>320</yloc>
+    </GUI>
+    <description/>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+  </transform>
+  <transform>
+    <type>JsonOutput</type>
+    <name>Arquivo quarentena</name>
+    <operation_type>writetofile</operation_type>
+    <encoding>UTF-8</encoding>
+    <outputValue>N</outputValue>
+    <jsonBloc>quarentena</jsonBloc>
+    <nrRowsInBloc>0</nrRowsInBloc>
+    <fields>
+      <field>
+        <name>registro_id</name>
+        <element>registro_id</element>
+      </field>
+      <field>
+        <name>origem</name>
+        <element>origem</element>
+      </field>
+      <field>
+        <name>regra_violada</name>
+        <element>regra_violada</element>
+      </field>
+      <field>
+        <name>mensagem</name>
+        <element>mensagem</element>
+      </field>
+      <field>
+        <name>execucao_id_silver</name>
+        <element>execucao_id</element>
+      </field>
+    </fields>
+    <addToResult>N</addToResult>
+    <fileAppended>N</fileAppended>
+    <createParentFolder>Y</createParentFolder>
+    <doNotOpenNewFileInit>N</doNotOpenNewFileInit>
+    <transformNrInFilename>N</transformNrInFilename>
+    <partNrInFilename>N</partNrInFilename>
+    <dateInFilename>N</dateInFilename>
+    <timeInFilename>N</timeInFilename>
+    <extension>json</extension>
+    <fileName>${DIR_QUARENTENA}/registros_quarentena_comentarios_${EXECUCAO_ID}</fileName>
+    <fileAsCommand>N</fileAsCommand>
+    <specifyingFormat>N</specifyingFormat>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>640</xloc>
+      <yloc>384</yloc>
+    </GUI>
+    <description/>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+  </transform>
+  <order>
+    <hop>
+      <from>Ler Bronze e aplicar regras</from>
+      <to>Get Variables</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Get Variables</from>
+      <to>Aprovado ou quarentena?</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Aprovado ou quarentena?</from>
+      <to>Gravar Silver</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Aprovado ou quarentena?</from>
+      <to>Gravar quarentena</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Gravar Silver</from>
+      <to>Arquivo Silver</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Gravar quarentena</from>
+      <to>Arquivo quarentena</to>
+      <enabled>Y</enabled>
+    </hop>
+  </order>
+  <notepads/>
+  <attributes/>
+  <transform_error_handling/>
+</pipeline>

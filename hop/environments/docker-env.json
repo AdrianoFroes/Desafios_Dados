@@ -1,0 +1,59 @@
+{
+  "variables" : [
+    {
+      "name" : "DB_HOST",
+      "value" : "postgres",
+      "description" : ""
+    },
+    {
+      "name" : "DB_PORT",
+      "value" : "5432",
+      "description" : ""
+    },
+    {
+      "name" : "DB_NAME",
+      "value" : "plataforma_educacional",
+      "description" : ""
+    },
+    {
+      "name" : "MONGO_HOST",
+      "value" : "mongodb",
+      "description" : ""
+    },
+    {
+      "name" : "MONGO_PORT",
+      "value" : "27017",
+      "description" : ""
+    },
+    {
+      "name" : "DIR_DADOS",
+      "value" : "/dados",
+      "description" : ""
+    },
+    {
+      "name" : "DIR_BRUTOS",
+      "value" : "/dados/brutos",
+      "description" : ""
+    },
+    {
+      "name" : "DIR_BRONZE",
+      "value" : "/dados/bronze",
+      "description" : ""
+    },
+    {
+      "name" : "DIR_SILVER",
+      "value" : "/dados/silver",
+      "description" : ""
+    },
+    {
+      "name" : "DIR_QUARENTENA",
+      "value" : "/dados/quarentena",
+      "description" : ""
+    },
+    {
+      "name" : "DIR_GOLD",
+      "value" : "/dados/gold",
+      "description" : "Amostras e Parquet da camada Gold (Estudante 2)."
+    }
+  ]
+}
