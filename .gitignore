@@ -13,4 +13,4 @@ dashboard/evidencias/*.jpg
 
 dados/bronze/
 dados/silver/
-dados/quarentena/
+dados/quarentena/docker-volume/
