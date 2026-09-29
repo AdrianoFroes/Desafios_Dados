@@ -1,0 +1,44 @@
+# RF27 - ingestao de metadados tecnicos do PostgreSQL do projeto.
+# Executado dentro do container openmetadata_ingestion por
+# openmetadata/configurar_catalogo.py (scripts/07_openmetadata_catalogo.ps1).
+# As variaveis ${...} sao expandidas pelo CLI "metadata" a partir do ambiente;
+# nenhuma senha fica neste arquivo.
+source:
+  type: postgres
+  serviceName: plataforma_educacional_pg
+  serviceConnection:
+    config:
+      type: Postgres
+      username: om_catalogo
+      authType:
+        password: ${OM_CATALOGO_PASSWORD}
+      hostPort: host.docker.internal:${POSTGRES_PORT}
+      database: plataforma_educacional
+  sourceConfig:
+    config:
+      type: DatabaseMetadata
+      includeViews: true
+      includeTables: true
+      includeTags: false
+      markDeletedTables: true
+      schemaFilterPattern:
+        includes:
+          - ^bronze$
+          - ^silver$
+          - ^quarentena$
+          - ^qualidade$
+          - ^auditoria$
+          - ^gold$
+          - ^mestres$
+          - ^lgpd$
+          - ^public$
+sink:
+  type: metadata-rest
+  config: {}
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    hostPort: http://openmetadata-server:8585/api
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: ${OM_JWT_TOKEN}

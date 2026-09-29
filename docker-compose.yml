@@ -1,3 +1,21 @@
+x-superset-comum: &superset-comum
+  image: apache/superset:3.1.1
+  env_file:
+    - .env
+  environment:
+    SUPERSET_CONFIG_PATH: "/app/pythonpath/superset_config.py"
+    SUPERSET_DB_URI: "postgresql+psycopg2://leitor_bi:${BI_PASSWORD}@postgres:5432/${POSTGRES_DB:-plataforma_educacional}"
+    SUPERSET_META_URI: "postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/superset_meta"
+    TALISMAN_ENABLED: "False"
+    SUPERSET_LOAD_EXAMPLES: "no"
+    REDIS_HOST: redis
+  volumes:
+    - superset_home:/app/superset_home
+    - ./dashboard/superset_config.py:/app/pythonpath/superset_config.py:ro
+    - ./src/setup_superset_internal.py:/app/setup_superset_internal.py:ro
+    - ./sql:/app/sql:ro
+  restart: unless-stopped
+
 services:
   postgres:
     image: pgvector/pgvector:pg16
@@ -6,12 +24,17 @@ services:
       - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB:-plataforma_educacional}
     ports:
-      - "5433:5432"
+      - "${POSTGRES_PORT:-5433}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-plataforma_educacional}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
     restart: unless-stopped
 
   mongodb:
@@ -23,32 +46,51 @@ services:
       - mongo_data:/data/db
     restart: unless-stopped
 
+  redis:
+    image: redis:7-alpine
+    container_name: desafio_redis
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:v1.20
+    container_name: desafio_mailpit
+    ports:
+      - "8025:8025"
+    restart: unless-stopped
+
   superset:
-    image: apache/superset:3.1.1
+    <<: *superset-comum
     container_name: desafio_superset
     ports:
       - "8088:8088"
-    environment:
-      SUPERSET_SECRET_KEY: "desafio_dados_fic_dev_secret_key_2026_super_safe"
-      SUPERSET_CONFIG_PATH: "/app/pythonpath/superset_config.py"
-      TALISMAN_ENABLED: "False"
-      SUPERSET_LOAD_EXAMPLES: "no"
-    volumes:
-      - superset_home:/app/superset_home
-      - ./dashboard/superset_config.py:/app/pythonpath/superset_config.py:ro
-      - ./src/setup_superset_internal.py:/app/setup_superset_internal.py:ro
-      - ./sql:/app/sql:ro
     command: >
       /bin/sh -c "
       superset db upgrade &&
-      superset fab create-admin --username admin --firstname Admin --lastname FICDEV --email admin@ficdev.local --password admin || true &&
+      superset fab create-admin --username $${SUPERSET_ADMIN_USER:-admin} --firstname Admin --lastname FICDEV --email admin@ficdev.local --password $${SUPERSET_ADMIN_PASSWORD} || true &&
+      superset fab reset-password --username $${SUPERSET_ADMIN_USER:-admin} --password $${SUPERSET_ADMIN_PASSWORD} &&
       superset init &&
-      python /app/setup_superset_internal.py || true &&
       /usr/bin/run-server.sh
       "
     depends_on:
       - postgres
-    restart: unless-stopped
+      - redis
+
+  superset_worker:
+    <<: *superset-comum
+    container_name: desafio_superset_worker
+    command: celery --app=superset.tasks.celery_app:app worker --pool=prefork -O fair -c 2
+    depends_on:
+      - superset
+      - redis
+      - mailpit
+
+  superset_beat:
+    <<: *superset-comum
+    container_name: desafio_superset_beat
+    command: celery --app=superset.tasks.celery_app:app beat --pidfile /tmp/celerybeat.pid -s /tmp/celerybeat-schedule
+    depends_on:
+      - superset
+      - redis
 
   apresentacao:
     image: nginx:alpine
@@ -68,8 +110,10 @@ services:
       - .env
     environment:
       - HOP_CONFIG_FOLDER=/files/config
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_USER=${POSTGRES_USER:-postgres}
+      # O Hop resolve ${VAR} a partir das system properties da JVM, nao do ambiente.
+      - CATALINA_OPTS=-DDB_USER=${POSTGRES_USER:-postgres} -DDB_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ./hop:/files
       - ./dados:/dados

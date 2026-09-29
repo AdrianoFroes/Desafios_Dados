@@ -11,7 +11,7 @@ services:
     volumes:
       - om_postgres_data:/var/lib/postgresql/data
     ports:
-      - "5434:5432"
+      - "5436:5432"
     restart: unless-stopped
 
   openmetadata-elasticsearch:

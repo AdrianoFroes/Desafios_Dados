@@ -543,7 +543,7 @@
 
     <!-- Slide 1 -->
     <div class="slide active" id="slide-1" data-notes="Bom dia a todos os membros da banca. Hoje apresentamos a solução da nossa equipe para a plataforma de conteúdos educacionais. Nosso desafio principal não foi apenas construir um pipeline que funcionasse tecnicamente, mas responder a uma dor crítica de qualquer edtech: como transformar dados brutos de navegação em decisões pedagógicas concretas para combater a evasão de alunos. Nossa arquitetura conecta fontes multimodais em CSV e JSON, passa por um armazenamento híbrido no PostgreSQL e MongoDB, utiliza representações vetoriais com pgvector para inteligência semântica e entrega os resultados mastigados em um dashboard analítico no Apache Superset. Vamos ver como esses dados se comportaram na prática.">
-      <span class="slide-tag">Slide 1 de 9 • Visão Geral (~35s)</span>
+      <span class="slide-tag">Slide 1 de 10 • Visão Geral (~35s)</span>
       <h1 class="slide-title">Pipeline de Recomendação e Dashboard Educacional</h1>
       <div class="slide-body">
         <div class="grid-3">
@@ -578,7 +578,7 @@
 
     <!-- Slide 2 -->
     <div class="slide" id="slide-2" data-notes="Começando pela base de tudo: a confiabilidade da ingestão. Processamos três mil registros no total, mil de cada fonte, e aplicamos regras rigorosas de saneamento antes de qualquer gravação. O catálogo de conteúdos chegou perfeito: mil itens lidos, zero correções necessárias. Já nas interações dos estudantes, 35,6% dos registros precisaram de tratamento de valores nulos e normalização de percentuais. Nos comentários em MongoDB, 83,7% passaram por higienização de strings e validação de notas. O grande diferencial de engenharia da nossa equipe foi garantir 100% de conformidade operacional final com zero descarte de linhas. Nenhum dado foi varrido para debaixo do tapete: tudo foi validado, corrigido e integrado com rastreabilidade.">
-      <span class="slide-tag">Slide 2 de 9 • Qualidade na Ingestão (~55s)</span>
+      <span class="slide-tag">Slide 2 de 10 • Qualidade na Ingestão (~55s)</span>
       <h1 class="slide-title">Governança e Qualidade dos Dados de Entrada</h1>
       <div class="slide-body">
         <div class="table-container">
@@ -633,7 +633,7 @@
 
     <!-- Slide 3 -->
     <div class="slide" id="slide-3" data-notes="Para a busca e recomendação, geramos vetores de 384 dimensões utilizando o modelo MiniLM-L6-v2 integrado nativamente ao PostgreSQL via extensão pgvector. Validamos que a busca semântica responde com altíssima precisão quando a intenção do aluno é clara: para uma consulta como 'Python avançado com POO', atingimos similaridade de 0,84 no topo do ranking. Para termos mais amplos, como 'Fundamentos de banco para IA', a similaridade fica em torno de 0,66, refletindo com precisão a dispersão do tema. Nosso motor de recomendação combina histórico de visualização e curtida com uma trava obrigatória: conteúdos já concluídos têm pontuação zerada automaticamente. Avaliamos mais de 38 mil pares possíveis de usuário e conteúdo, e o motor foi cirúrgico: persistiu apenas 744 recomendações — uma taxa de seletividade de 1,96% —, sendo que mais de 78% dessas sugestões são de altíssima afinidade, com pontuação superior a 70 pontos.">
-      <span class="slide-tag">Slide 3 de 9 • IA Vetorial (~60s)</span>
+      <span class="slide-tag">Slide 3 de 10 • IA Vetorial (~60s)</span>
       <h1 class="slide-title">Inteligência Semântica e Motor de Recomendação</h1>
       <div class="slide-body">
         <div class="grid-4">
@@ -670,7 +670,7 @@
 
     <!-- Slide 4 -->
     <div class="slide" id="slide-4" data-notes="Entrando agora no coração do nosso projeto: o que esses números realmente nos dizem sobre o negócio no nosso Dashboard do Superset? Temos uma base ativa de 150 alunos interagindo com mil conteúdos. À primeira vista, o cenário parece dos sonhos: a avaliação média global é de 4,48 estrelas em 5. Os estudantes que avaliam o catálogo atribuem notas de excelência. Porém, ao cruzar esse dado com a conclusão, encontramos o grande paradoxo da plataforma: a taxa de conclusão global é de apenas 28,62%. Foram 154 conclusões para mais de 530 materiais iniciados ou visualizados, com um tempo médio de consumo de cerca de 145 minutos. A pergunta que fizemos aos dados foi: se o conteúdo é tão bem avaliado, por que menos de um terço dos alunos chega até o fim? Fomos investigar onde está esse atrito.">
-      <span class="slide-tag">Slide 4 de 9 • Dashboard: Big Numbers (~60s)</span>
+      <span class="slide-tag">Slide 4 de 10 • Dashboard: Big Numbers (~60s)</span>
       <h1 class="slide-title">Painel Executivo: O Diagnóstico Global (RF12/RF13)</h1>
       <div class="slide-body">
         <div class="grid-5">
@@ -743,7 +743,7 @@
 
     <!-- Slide 5 -->
     <div class="slide" id="slide-5" data-notes="Nossa primeira hipótese foi: será que algumas áreas do conhecimento são rejeitadas pelos alunos? Olhamos para o gráfico de barras por categoria. Vejam o contraste: DevOps & Cloud é o nosso campeão de engajamento prático, atingindo 42,6% de taxa de conclusão com 141 interações. Logo ao lado, Business Intelligence lidera o volume bruto com 144 interações. Por outro lado, encontramos um abismo em Segurança & Governança: a taxa de término cai para alarmantes 13,16%, mesmo sendo a categoria com maior tempo médio gasto por aluno — quase 195 minutos. E aqui está a chave: em Segurança, a nota média é altíssima: 4,68 estrelas! E Engenharia de Dados lidera a satisfação com 4,75. Isso prova tecnicamente que o aluno não abandona por falta de interesse no tema. O problema é a forma como o conteúdo está empacotado.">
-      <span class="slide-tag">Slide 5 de 9 • Descoberta 1 (~90s)</span>
+      <span class="slide-tag">Slide 5 de 10 • Descoberta 1 (~90s)</span>
       <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.85rem;">
         <h1 class="slide-title" style="margin-bottom: 0;">Desempenho e Retenção por Trilhas Temáticas</h1>
         <a href="http://localhost:8088/explore/?slice_id=4&standalone=1" target="_blank" class="btn" style="font-size: 0.8rem; padding: 0.3rem 0.7rem; border-color: rgba(56,189,248,0.4);">⚡ Abrir Slice no Superset (Kiosk)</a>
@@ -769,7 +769,7 @@
 
     <!-- Slide 6 -->
     <div class="slide" id="slide-6" data-notes="Quando cruzamos Categoria com Formato Didático, encontramos a resposta definitiva — este é o insight mais forte de todo o projeto. O conteúdo com maior taxa de término absoluto de todo o dataset é Podcast em Programação & Software, com 61,54% de conclusão. Os alunos escutam os 28 minutos médios de áudio e concluem o aprendizado com nota 4,27. No extremo oposto, o pior gargalo de toda a plataforma é Vídeo em Segurança & Governança, onde a conclusão despenca para meros 6,67%. Olhando a visão geral de formatos, o padrão é irrefutável: Vídeos e Podcasts sustentam taxas médias de 29% a 34% de conclusão, porque exigem cerca de 30 minutos de atenção. Já os Cursos Longos tradicionais têm a pior retenção média da plataforma, com apenas 23,1%, exigindo mais de 560 minutos. A recomendação executiva para a diretoria pedagógica é clara: não criem cursos monolíticos de 10 horas. Quebrem esses temas em trilhas de microlearning com vídeos curtos e podcasts temáticos.">
-      <span class="slide-tag">Slide 6 de 9 • O Maior Insight (~90s)</span>
+      <span class="slide-tag">Slide 6 de 10 • O Maior Insight (~90s)</span>
       <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.85rem;">
         <h1 class="slide-title" style="margin-bottom: 0;">O Formato Didático Define a Retenção</h1>
         <a href="http://localhost:8088/explore/?slice_id=9&standalone=1" target="_blank" class="btn" style="font-size: 0.8rem; padding: 0.3rem 0.7rem; border-color: rgba(56,189,248,0.4);">⚡ Abrir Slice no Superset (Kiosk)</a>
@@ -809,7 +809,7 @@
 
     <!-- Slide 7 -->
     <div class="slide" id="slide-7" data-notes="No gráfico temporal de linhas do Superset, mapeamos 234 dias de consumo contínuo durante o ano letivo. Identificamos uma média saudável de 4,3 interações diárias. No entanto, o aprendizado não acontece em fluxo estritamente uniforme: temos picos expressivos que chegam a 7, 10 e até 12 interações em um único dia. Ao correlacionar esses picos com o calendário, percebemos que eles coincidem exatamente com semanas de encerramento de ciclos e lançamentos de materiais novos. O aluno reage fortemente a estímulos de novidade e prazos bem definidos, o que valida o uso de campanhas periódicas de reengajamento.">
-      <span class="slide-tag">Slide 7 de 9 • Sazonalidade (~60s)</span>
+      <span class="slide-tag">Slide 7 de 10 • Sazonalidade (~60s)</span>
       <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.85rem;">
         <h1 class="slide-title" style="margin-bottom: 0;">Evolução Temporal e Comportamento de Consumo</h1>
         <a href="http://localhost:8088/explore/?slice_id=5&standalone=1" target="_blank" class="btn" style="font-size: 0.8rem; padding: 0.3rem 0.7rem; border-color: rgba(56,189,248,0.4);">⚡ Abrir Slice no Superset (Kiosk)</a>
@@ -838,7 +838,7 @@
 
     <!-- Slide 8 -->
     <div class="slide" id="slide-8" data-notes="O Slide 8 consolida o grande diagnóstico pedagógico do nosso projeto: o paradoxo entre satisfação e conclusão. Temos quatro quadrantes bem definidos. No quadrante de Sucesso Pleno, estão os formatos dinâmicos de DevOps, Programação e Inteligência Artificial, com alta nota e alta conclusão. No quadrante de Oportunidade Crítica, está Segurança & Governança: a nota é 4,68, provando a qualidade do instrutor e a relevância do tema, mas a conclusão de 13% expõe a barreira cognitiva de cursos longos. Ao todo, 74% dos alunos avaliam com nota 5, o que afasta qualquer suspeita de rejeição ao conteúdo. O problema nunca foi a qualidade pedagógica: foi a fadiga de formatos extensos.">
-      <span class="slide-tag">Slide 8 de 9 • Diagnóstico Causa-Raiz (~90s)</span>
+      <span class="slide-tag">Slide 8 de 10 • Diagnóstico Causa-Raiz (~90s)</span>
       <h1 class="slide-title">O Paradoxo Pedagógico: Análise Causa-Raiz</h1>
       <div class="slide-body">
         <div class="grid-2">
@@ -865,8 +865,56 @@
     </div>
 
     <!-- Slide 9 -->
-    <div class="slide" id="slide-9" data-notes="Para concluir, entregamos três ações estratégicas imediatas para a liderança da instituição: Primeira: Priorizar a produção de vídeos práticos e podcasts nas áreas de maior tração, como DevOps e Programação, que já provaram reter mais de 60% dos estudantes. Segunda: Intervir urgentemente nos materiais de Segurança & Governança, substituindo vídeos longos e monótonos por estudos de caso fragmentados. E terceira: Ativar em produção o motor de recomendação vetorial, que com seus 78% de precisão positiva consegue sugerir o próximo passo ideal antes que o aluno evada. A plataforma está 100% conteinerizada, documentada e com o dashboard operando em tempo real. Estamos prontos para as perguntas da banca. Muito obrigado.">
-      <span class="slide-tag">Slide 9 de 9 • Fechamento (~60s)</span>
+    <div class="slide" id="slide-9" data-notes="No Desafio 2 medimos o mesmo recorte de mil interações da Silver em Parquet e em JSON. O Parquet ficou com 64,5 KB, o JSON com 430,8 KB: o arquivo colunar ocupa cerca de 15% do tamanho, 6,7 vezes menor, em oito partições de ano e mês. A leitura completa, porém, foi mais rápida no JSON: 13 milissegundos contra 26 no Parquet. Com poucas mil linhas o formato colunar ainda não compensa o custo de abrir os arquivos; o ganho do Parquet aparece quando o filtro de período deixa meses de fora. O Apache Beam, no DirectRunner, agregou o engajamento por conteúdo e dia em 734 milissegundos e devolveu 997 linhas, exatamente as mesmas da Gold. O Spark não rodou nesta máquina Windows.">
+      <span class="slide-tag">Slide 9 de 10 • Parquet e Beam (~45s)</span>
+      <h1 class="slide-title">Parquet contra JSON: tamanho e tempo</h1>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="stat-card emerald">
+            <div class="stat-lbl">Tamanho Parquet</div>
+            <div class="stat-val">64,5 KB</div>
+            <div class="stat-sub">66.040 bytes • 1.000 interações • 8 partições ano/mês</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-lbl">Tamanho JSON</div>
+            <div class="stat-val">430,8 KB</div>
+            <div class="stat-sub">441.097 bytes • o mesmo recorte da Silver</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-lbl">Parquet ocupa</div>
+            <div class="stat-val">15%</div>
+            <div class="stat-sub">6,7× menor que o JSON no disco</div>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="stat-card indigo">
+            <div class="stat-lbl">Leitura do Parquet</div>
+            <div class="stat-val">26 ms</div>
+            <div class="stat-sub">0,026 s para ler o recorte inteiro</div>
+          </div>
+          <div class="stat-card indigo">
+            <div class="stat-lbl">Leitura do JSON</div>
+            <div class="stat-val">13 ms</div>
+            <div class="stat-sub">0,013 s • nesta escala o JSON leu mais rápido</div>
+          </div>
+          <div class="stat-card emerald">
+            <div class="stat-lbl">Beam DirectRunner</div>
+            <div class="stat-val">734 ms</div>
+            <div class="stat-sub">997 linhas de engajamento • iguais à Gold</div>
+          </div>
+        </div>
+        <div class="bullet-box">
+          <div class="bullet-item">
+            <div class="bullet-icon">!</div>
+            <div><strong>Leitura desta execução:</strong> com mil linhas o Parquet ganha em tamanho, não em velocidade. A partição mensal passa a compensar quando a consulta ignora meses fora do filtro. Spark não executou neste Windows.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10 -->
+    <div class="slide" id="slide-10" data-notes="Para concluir, entregamos três ações estratégicas imediatas para a liderança da instituição: Primeira: Priorizar a produção de vídeos práticos e podcasts nas áreas de maior tração, como DevOps e Programação, que já provaram reter mais de 60% dos estudantes. Segunda: Intervir urgentemente nos materiais de Segurança & Governança, substituindo vídeos longos e monótonos por estudos de caso fragmentados. E terceira: Ativar em produção o motor de recomendação vetorial, que com seus 78% de precisão positiva consegue sugerir o próximo passo ideal antes que o aluno evada. A plataforma está 100% conteinerizada, documentada e com o dashboard operando em tempo real. Estamos prontos para as perguntas da banca. Muito obrigado.">
+      <span class="slide-tag">Slide 10 de 10 • Fechamento (~60s)</span>
       <h1 class="slide-title">Recomendações Estratégicas para a Instituição</h1>
       <div class="slide-body">
         <div class="grid-3">
@@ -922,7 +970,7 @@
       <div class="progress-bar-fill" id="progressFill"></div>
     </div>
     <div class="nav-controls">
-      <span style="font-weight: 700; font-size: 0.95rem; margin-right: 0.5rem;" id="slideCounter">1 / 9</span>
+      <span style="font-weight: 700; font-size: 0.95rem; margin-right: 0.5rem;" id="slideCounter">1 / 10</span>
       <button class="btn" onclick="prevSlide()">Anterior</button>
       <button class="btn btn-primary" onclick="nextSlide()">Próximo &rarr;</button>
     </div>
@@ -988,6 +1036,14 @@
             <div style="font-weight: 700; color: #fff;">144,9 min (Geral)</div>
           </div>
           <div style="background: rgba(255,255,255,0.05); padding: 0.75rem; border-radius: 8px;">
+            <div style="font-size: 0.8rem; color: #94a3b8;">Parquet × JSON</div>
+            <div style="font-weight: 700; color: #fff;">64,5 KB × 430,8 KB (6,7×)</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.05); padding: 0.75rem; border-radius: 8px;">
+            <div style="font-size: 0.8rem; color: #94a3b8;">Leitura / Beam</div>
+            <div style="font-weight: 700; color: #fff;">26 ms × 13 ms • Beam 734 ms</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.05); padding: 0.75rem; border-radius: 8px;">
             <div style="font-size: 0.8rem; color: #94a3b8;">Recomendações no Lote</div>
             <div style="font-weight: 700; color: #fff;">744 (78% com score &ge; 70)</div>
           </div>
@@ -1021,7 +1077,7 @@
 
   <script>
     let currentSlide = 1;
-    const totalSlides = 9;
+    const totalSlides = 10;
     let timerSeconds = 0;
     let timerInterval = null;
     let timerRunning = false;

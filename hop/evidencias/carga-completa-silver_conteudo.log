@@ -1,0 +1,113 @@
+﻿2026/09/29 02:17:27 - HopRun - Referencing environment 'docker-env' for project desafio_dados_2' in null
+2026/09/29 02:17:27 - HopRun - Enabling project 'desafio_dados_2'
+2026/09/29 02:17:27 - HopRun - Two-way password encoder initialized with plugin ID 'Hop' for project 'desafio_dados_2'
+2026/09/29 02:17:27 - HopRun - Starting pipeline: /files/pipelines/silver_conteudo.hpl
+2026/09/29 02:17:27 - silver_conteudo - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:27 - silver_conteudo - Execution started for pipeline [silver_conteudo]
+2026/09/29 02:17:28 - Gravar Silver.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:28 - Gravar quarentena.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:28 - Ler Bronze e aplicar regras.0 - Finished reading query, closing connection.
+2026/09/29 02:17:28 - Ler Bronze e aplicar regras.0 - Finished processing (I=1000, O=0, R=0, W=1000, U=0, E=0)
+2026/09/29 02:17:28 - Get Variables.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:28 - Aprovado ou quarentena?.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+docker.exe : 2026/09/29 02:17:28 - Gravar Silver.0 - ERROR: Because of an error, this transform can't continue: 
+No D:\Desafio Dados\Desafios_Dados\scripts\_comum.ps1:75 caractere:14
++     $saida = & docker exec desafio_apache_hop sh -c $cmd 2>&1
++              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (2026/09/29 02:1...an't continue: :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+2026/09/29 02:17:28 - Gravar Silver.0 - org.apache.hop.core.exception.HopException: 
+2026/09/29 02:17:28 - Gravar Silver.0 - Error batch inserting rows into table [conteudo].
+2026/09/29 02:17:28 - Gravar Silver.0 - Errors encountered (first 10):
+2026/09/29 02:17:28 - Gravar Silver.0 - ERROR: duplicate key value violates unique constraint "conteudo_pkey"
+2026/09/29 02:17:28 - Gravar Silver.0 -   Detail: Key (conteudo_id)=(1) already exists.
+2026/09/29 02:17:28 - Gravar Silver.0 - 
+2026/09/29 02:17:28 - Gravar Silver.0 - 
+2026/09/29 02:17:28 - Gravar Silver.0 - Error updating batch
+2026/09/29 02:17:28 - Gravar Silver.0 - Batch entry 0 INSERT INTO silver.conteudo (conteudo_id, titulo, tipo, 
+categoria, nivel, carga_horaria_min, data_publicacao, descricao, autor, origem, arquivo_origem, data_hora_ingestao, 
+execucao_id) VALUES ( ('1'::int8),  ('Curso Completo de Segurança de Redes e Controle de Acesso: Da Teoria à 
+Prática'),  ('Curso'),  ('DevOps & Cloud'),  ('Avançado'),  ('3479'::int8),  ('2025-03-06 00:00:00+00'::date),  
+('Neste curso aprofundado, você aprenderá de forma estruturada sobre Segurança de Redes e Controle de Acesso. O 
+treinamento abrange tópicos de nível avançado, exercícios práticos e construção de projetos completos. Indicado para 
+profissionais que desejam dominar ferramentas modernas e padrões consolidados em DevOps & Cloud.'),  ('Profa. Carla 
+Antunes Silveira'),  ('catalogo'),  ('catalogo.csv'),  ('2026-09-29 02:17:24.688+00'::timestamp),  
+('orquestrador-ok')) was aborted: ERROR: duplicate key value violates unique constraint "conteudo_pkey"
+2026/09/29 02:17:28 - Gravar Silver.0 -   Detail: Key (conteudo_id)=(1) already exists.  Call getNextException to see 
+other errors in the batch.
+2026/09/29 02:17:28 - Gravar Silver.0 - 
+2026/09/29 02:17:28 - Gravar Silver.0 - 
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.apache.hop.pipeline.transforms.tableoutput.TableOutput.writeToTable(TableOutput.java:362)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.apache.hop.pipeline.transforms.tableoutput.TableOutput.processRow(TableOutput.java:139)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at org.apache.hop.pipeline.transform.RunThread.run(RunThread.java:54)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at java.base/java.lang.Thread.run(Thread.java:1583)
+2026/09/29 02:17:28 - Gravar Silver.0 - Caused by: org.apache.hop.core.exception.HopDatabaseBatchException: 
+2026/09/29 02:17:28 - Gravar Silver.0 - Error updating batch
+2026/09/29 02:17:28 - Gravar Silver.0 - Batch entry 0 INSERT INTO silver.conteudo (conteudo_id, titulo, tipo, 
+categoria, nivel, carga_horaria_min, data_publicacao, descricao, autor, origem, arquivo_origem, data_hora_ingestao, 
+execucao_id) VALUES ( ('1'::int8),  ('Curso Completo de Segurança de Redes e Controle de Acesso: Da Teoria à 
+Prática'),  ('Curso'),  ('DevOps & Cloud'),  ('Avançado'),  ('3479'::int8),  ('2025-03-06 00:00:00+00'::date),  
+('Neste curso aprofundado, você aprenderá de forma estruturada sobre Segurança de Redes e Controle de Acesso. O 
+treinamento abrange tópicos de nível avançado, exercícios práticos e construção de projetos completos. Indicado para 
+profissionais que desejam dominar ferramentas modernas e padrões consolidados em DevOps & Cloud.'),  ('Profa. Carla 
+Antunes Silveira'),  ('catalogo'),  ('catalogo.csv'),  ('2026-09-29 02:17:24.688+00'::timestamp),  
+('orquestrador-ok')) was aborted: ERROR: duplicate key value violates unique constraint "conteudo_pkey"
+2026/09/29 02:17:28 - Gravar Silver.0 -   Detail: Key (conteudo_id)=(1) already exists.  Call getNextException to see 
+other errors in the batch.
+2026/09/29 02:17:28 - Gravar Silver.0 - 
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.apache.hop.core.database.Database.createHopDatabaseBatchException(Database.java:1495)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.apache.hop.pipeline.transforms.tableoutput.TableOutput.writeToTable(TableOutput.java:307)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	... 3 more
+2026/09/29 02:17:28 - Gravar Silver.0 - Caused by: java.sql.BatchUpdateException: Batch entry 0 INSERT INTO 
+silver.conteudo (conteudo_id, titulo, tipo, categoria, nivel, carga_horaria_min, data_publicacao, descricao, autor, 
+origem, arquivo_origem, data_hora_ingestao, execucao_id) VALUES ( ('1'::int8),  ('Curso Completo de Segurança de Redes 
+e Controle de Acesso: Da Teoria à Prática'),  ('Curso'),  ('DevOps & Cloud'),  ('Avançado'),  ('3479'::int8),  
+('2025-03-06 00:00:00+00'::date),  ('Neste curso aprofundado, você aprenderá de forma estruturada sobre Segurança de 
+Redes e Controle de Acesso. O treinamento abrange tópicos de nível avançado, exercícios práticos e construção de 
+projetos completos. Indicado para profissionais que desejam dominar ferramentas modernas e padrões consolidados em 
+DevOps & Cloud.'),  ('Profa. Carla Antunes Silveira'),  ('catalogo'),  ('catalogo.csv'),  ('2026-09-29 
+02:17:24.688+00'::timestamp),  ('orquestrador-ok')) was aborted: ERROR: duplicate key value violates unique constraint 
+"conteudo_pkey"
+2026/09/29 02:17:28 - Gravar Silver.0 -   Detail: Key (conteudo_id)=(1) already exists.  Call getNextException to see 
+other errors in the batch.
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.postgresql.jdbc.BatchResultHandler.handleError(BatchResultHandler.java:165)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.postgresql.core.ResultHandlerDelegate.handleError(ResultHandlerDelegate.java:52)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2590)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2322)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.postgresql.core.v3.QueryExecutorImpl.flushIfDeadlockRisk(QueryExecutorImpl.java:1628)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.postgresql.core.v3.QueryExecutorImpl.sendQuery(QueryExecutorImpl.java:1653)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:660)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at org.postgresql.jdbc.PgStatement.internalExecuteBatch(PgStatement.java:900)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at org.postgresql.jdbc.PgStatement.executeBatch(PgStatement.java:924)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.postgresql.jdbc.PgPreparedStatement.executeBatch(PgPreparedStatement.java:1778)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.apache.hop.pipeline.transforms.tableoutput.TableOutput.writeToTable(TableOutput.java:303)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	... 3 more
+2026/09/29 02:17:28 - Gravar Silver.0 - Caused by: org.postgresql.util.PSQLException: ERROR: duplicate key value 
+violates unique constraint "conteudo_pkey"
+2026/09/29 02:17:28 - Gravar Silver.0 -   Detail: Key (conteudo_id)=(1) already exists.
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2904)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	at 
+org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2589)
+2026/09/29 02:17:28 - Gravar Silver.0 - 	... 11 more
+2026/09/29 02:17:28 - Gravar Silver.0 - Finished processing (I=0, O=999, R=1000, W=0, U=0, E=1)
+2026/09/29 02:17:28 - silver_conteudo - Pipeline detected one or more transforms with errors.
+2026/09/29 02:17:28 - silver_conteudo - Pipeline is killing the other transforms!
+2026/09/29 02:17:28 - Arquivo Silver.0 - Finished processing (I=0, O=1, R=0, W=0, U=0, E=0)
+2026/09/29 02:17:28 - silver_conteudo - Pipeline duration : 0.578 seconds [  0.578" ]
+HopRun exit.
+2026/09/29 02:17:28 - silver_conteudo - Execution finished on a local pipeline engine with run configuration 'local'

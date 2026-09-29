@@ -1,0 +1,16 @@
+﻿2026/09/29 02:17:22 - HopRun - Referencing environment 'docker-env' for project desafio_dados_2' in null
+2026/09/29 02:17:22 - HopRun - Enabling project 'desafio_dados_2'
+2026/09/29 02:17:22 - HopRun - Two-way password encoder initialized with plugin ID 'Hop' for project 'desafio_dados_2'
+2026/09/29 02:17:22 - HopRun - Starting pipeline: /files/pipelines/bronze_comentarios.hpl
+2026/09/29 02:17:22 - bronze_comentarios - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:22 - bronze_comentarios - Execution started for pipeline [bronze_comentarios]
+2026/09/29 02:17:23 - Table Output.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:23 - JSON Input.0 - Finished processing (I=1000, O=0, R=0, W=1000, U=0, E=0)
+2026/09/29 02:17:23 - Add constants.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:23 - Get Variables.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:23 - Get System Info.0 - Finished processing (I=0, O=0, R=1000, W=2000, U=0, E=0)
+2026/09/29 02:17:23 - JSON Output.0 - Finished processing (I=0, O=1000, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:23 - Table Output.0 - Finished processing (I=0, O=1000, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:23 - bronze_comentarios - Pipeline duration : 0.499 seconds [  0.499" ]
+HopRun exit.
+2026/09/29 02:17:23 - bronze_comentarios - Execution finished on a local pipeline engine with run configuration 'local'

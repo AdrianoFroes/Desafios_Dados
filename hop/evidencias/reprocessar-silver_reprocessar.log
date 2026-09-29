@@ -1,0 +1,15 @@
+﻿2026/09/29 02:17:54 - HopRun - Referencing environment 'docker-env' for project desafio_dados_2' in null
+2026/09/29 02:17:55 - HopRun - Enabling project 'desafio_dados_2'
+2026/09/29 02:17:55 - HopRun - Two-way password encoder initialized with plugin ID 'Hop' for project 'desafio_dados_2'
+2026/09/29 02:17:55 - HopRun - Starting pipeline: /files/pipelines/silver_reprocessar.hpl
+2026/09/29 02:17:55 - silver_reprocessar - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:55 - silver_reprocessar - Execution started for pipeline [silver_reprocessar]
+2026/09/29 02:17:55 - Ler quarentena pendente.0 - Finished reading query, closing connection.
+2026/09/29 02:17:55 - Ler quarentena pendente.0 - Finished processing (I=2, O=0, R=0, W=2, U=0, E=0)
+2026/09/29 02:17:55 - Extrair payload corrigido.0 - Finished processing (I=2, O=0, R=2, W=2, U=0, E=0)
+2026/09/29 02:17:55 - Get Variables.0 - Finished processing (I=0, O=0, R=2, W=2, U=0, E=0)
+2026/09/29 02:17:55 - Reaplicar regras.0 - Finished reading query, closing connection.
+2026/09/29 02:17:55 - Reaplicar regras.0 - Finished processing (I=0, O=0, R=2, W=2, U=0, E=0)
+2026/09/29 02:17:55 - silver_reprocessar - Pipeline duration : 0.457 seconds [  0.457" ]
+HopRun exit.
+2026/09/29 02:17:55 - silver_reprocessar - Execution finished on a local pipeline engine with run configuration 'local'

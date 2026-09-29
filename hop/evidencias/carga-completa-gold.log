@@ -1,0 +1,19 @@
+﻿2026/09/29 02:14:48 - HopRun - Referencing environment 'docker-env' for project desafio_dados_2' in null
+2026/09/29 02:14:48 - HopRun - Enabling project 'desafio_dados_2'
+2026/09/29 02:14:48 - HopRun - Two-way password encoder initialized with plugin ID 'Hop' for project 'desafio_dados_2'
+2026/09/29 02:14:48 - HopRun - Starting pipeline: /files/pipelines/gold.hpl
+2026/09/29 02:14:48 - gold - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:14:48 - gold - Execution started for pipeline [gold]
+2026/09/29 02:14:48 - Publicar gold.0 - Finished reading query, closing connection.
+2026/09/29 02:14:48 - Logar gold.0 - 
+2026/09/29 02:14:48 - Logar gold.0 - ------------> Linenr 1------------------------------
+2026/09/29 02:14:48 - Logar gold.0 - GOLD PUBLICADA
+2026/09/29 02:14:48 - Logar gold.0 - 
+2026/09/29 02:14:48 - Logar gold.0 - status = publicado
+2026/09/29 02:14:48 - Logar gold.0 - 
+2026/09/29 02:14:48 - Logar gold.0 - ====================
+2026/09/29 02:14:48 - Logar gold.0 - Finished processing (I=0, O=0, R=1, W=1, U=0, E=0)
+2026/09/29 02:14:48 - Publicar gold.0 - Finished processing (I=1, O=0, R=0, W=1, U=0, E=0)
+2026/09/29 02:14:48 - gold - Pipeline duration : 0.388 seconds [  0.388" ]
+2026/09/29 02:14:48 - gold - Execution finished on a local pipeline engine with run configuration 'local'
+HopRun exit.

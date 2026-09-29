@@ -1,5 +1,5 @@
 {
-  "execucao_id": "gold-local-1",
+  "execucao_id": "carga-completa",
   "volume_silver_interacao": 1000,
   "parquet": {
     "linhas": 1000,
@@ -30,10 +30,37 @@
       "ano=2026/mes=07",
       "ano=2026/mes=08"
     ],
-    "bytes_parquet": 66656,
-    "bytes_json": 438097,
-    "segundos_leitura_parquet": 0.15627,
-    "segundos_leitura_json": 0.007606,
+    "bytes_parquet": 66496,
+    "bytes_json": 441097,
+    "bytes_csv": 157724,
+    "linhas_csv": 1000,
+    "segundos_leitura_parquet": 0.077093,
+    "segundos_leitura_json": 0.006344,
+    "segundos_leitura_csv": 0.007857,
+    "recorte_um_mes": {
+      "mes": "03",
+      "linhas_parquet": 124,
+      "linhas_json": 124,
+      "segundos_parquet_com_poda": 0.065301,
+      "segundos_json_filtrado": 0.005388
+    },
+    "tipos_preservados": {
+      "interacao_id": "int64",
+      "usuario_id": "int64",
+      "conteudo_id": "int64",
+      "tipo_interacao": "string",
+      "data_hora": "timestamp[us]",
+      "tempo_consumido": "int64",
+      "percentual_conclusao": "double",
+      "avaliacao_atribuida": "int64",
+      "origem": "string",
+      "arquivo_origem": "string",
+      "data_hora_ingestao": "timestamp[us]",
+      "execucao_id": "string",
+      "data_hora_padronizacao": "timestamp[us]",
+      "ano": "string",
+      "mes": "string"
+    },
     "estrategia": "particao hive por ano e mes de data_hora",
     "justificativa": "O consumo analitico filtra por periodo. A particao mensal permite poda de arquivo sem multiplicar pastas alem do que o recorte tem de meses.",
     "limitacao": "O recorte do desafio tem poucos milhares de linhas. Nessa escala o Parquet pode nao ser mais rapido que o JSON; o ganho aparece quando a leitura passa a ignorar meses fora do filtro."
@@ -43,7 +70,7 @@
       "runner": "DirectRunner",
       "rotulo": "direct",
       "linhas": 997,
-      "segundos": 3.411,
+      "segundos": 3.808,
       "argumentos": [
         "--runner=DirectRunner"
       ],
@@ -54,7 +81,7 @@
       "runner": "PortableRunner",
       "rotulo": "spark",
       "linhas": 997,
-      "segundos": 3.297,
+      "segundos": 4.972,
       "argumentos": [
         "--runner=PortableRunner",
         "--job_endpoint=localhost:8099",
@@ -70,7 +97,7 @@
     "runner": "PortableRunner",
     "rotulo": "spark",
     "linhas": 997,
-    "segundos": 3.297,
+    "segundos": 4.972,
     "argumentos": [
       "--runner=PortableRunner",
       "--job_endpoint=localhost:8099",
@@ -85,6 +112,13 @@
     "linhas_beam": 997,
     "iguais": true
   },
-  "qualidade": "qualidade/resultados/gold-local-1.json",
-  "regra": "conclusao = tipo conclusão OU percentual_conclusao >= 100"
+  "qualidade": "qualidade/resultados/carga-completa.json",
+  "regra": "conclusao = tipo conclusão OU percentual_conclusao >= 100",
+  "configuracao": {
+    "python": "3.12.14",
+    "apache_beam": "2.76.0",
+    "pyarrow": "25.0.1",
+    "spark_job_server": "apache/beam_spark3_job_server:2.76.0 (--spark-master-url=local[2])",
+    "sistema": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.41"
+  }
 }

@@ -1,0 +1,31 @@
+# RF27 / RF29 - ingestao do Superset (dashboard, graficos e datasets).
+# dbServiceNames liga os datasets do Superset as tabelas ja catalogadas do
+# PostgreSQL, o que gera a linhagem tabela -> grafico automaticamente.
+source:
+  type: superset
+  serviceName: superset_desafio
+  serviceConnection:
+    config:
+      type: Superset
+      hostPort: http://host.docker.internal:8088
+      connection:
+        provider: db
+        username: ${SUPERSET_ADMIN_USER}
+        password: ${SUPERSET_ADMIN_PASSWORD}
+  sourceConfig:
+    config:
+      type: DashboardMetadata
+      includeDataModels: true
+      includeTags: false
+      dbServiceNames:
+        - plataforma_educacional_pg
+sink:
+  type: metadata-rest
+  config: {}
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    hostPort: http://openmetadata-server:8585/api
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: ${OM_JWT_TOKEN}

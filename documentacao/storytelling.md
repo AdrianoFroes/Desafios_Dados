@@ -1,95 +1,90 @@
-# Storytelling Executivo — Plataforma Educacional
+# Storytelling executivo — Plataforma Educacional (RF16)
 
-## 1. Pergunta Decisória
+Números da execução `carga-completa`, lidos da camada Gold. Para reproduzir, rode a consulta 4 de `sql/sql_lab.sql` e as consultas indicadas em cada seção.
 
-**Quais formatos de conteúdo apresentam maior retenção e deveriam receber prioridade de investimento na plataforma educacional?**
+## 1. Pergunta decisória
 
----
+**Em que formato de conteúdo a plataforma deve concentrar a produção do próximo ciclo para aumentar a taxa de conclusão?**
+
+A decisão envolve orçamento de produção: um curso custa muito mais para produzir que um vídeo ou um artigo. Se o formato caro não converte melhor em conclusão, o investimento precisa mudar de lugar.
 
 ## 2. Contexto
 
-A plataforma educacional oferece conteúdos em quatro formatos principais: **Curso**, **Vídeo**, **Artigo** e **Podcast**. Apesar do volume crescente de dados de interação, a instituição não possui clareza sobre qual formato gera maior engajamento e retenção. Sem essa clareza, decisões de investimento em produção de conteúdo são tomadas com base em intuição, e não em evidências.
+A plataforma tem 1000 conteúdos em quatro formatos, com quantidades parecidas: 272 artigos, 256 podcasts, 238 vídeos e 234 cursos. Entre 1º de janeiro e 25 de agosto de 2026, 150 usuários ativos geraram 1000 interações. A taxa de conclusão geral é de 28,62%, e a avaliação média é de 4,48 em 5.
 
-Este documento apresenta uma narrativa executiva baseada nos dados consolidados na camada **Gold** da plataforma, respondendo à pergunta decisória e recomendando ações concretas.
+O motor de recomendação do Desafio 1 gerou 744 recomendações no último lote. Dessas, 76 viraram interação: conversão de 10,22%, acima da meta de 8%.
 
----
+**Fonte:** `gold.kpi_geral` e `gold.kpi_conversao_recomendacao`.
 
 ## 3. Evidência
 
-### 3.1 Taxa de Conclusão por Formato
+A sequência de visualizações segue a narrativa: primeiro o volume ao longo do tempo, depois a conclusão por categoria e formato, e por fim a comparação entre formatos.
 
-A análise dos KPIs consolidados revela diferenças significativas na taxa de conclusão entre formatos:
+### 3.1 O engajamento é contínuo, não sazonal
 
-| Formato | Taxa de Conclusão | Avaliação Média |
-|---|---|---|
-| **Artigo** | 70,0% | 4,7 |
-| **Podcast** | 61,5% | 4,9 |
-| **Vídeo** | 44,4% – 50,0% | 4,6 – 4,8 |
-| **Curso** | 23,1% | 4,2 |
+Gráfico **Evolução Temporal de Interações** (dataset virtual `vds_interacoes_dia_categoria`). As 1000 interações estão distribuídas em 234 dias, sem mês concentrando o volume. A diferença de conclusão entre formatos, portanto, não vem de um pico isolado de uso.
 
-**Fonte:** `gold.kpi_desempenho_categoria` e `gold.kpi_engajamento_formato`
+### 3.2 A conclusão varia mais por categoria do que por formato
 
-### 3.2 Evolução Temporal
+Gráfico **Taxa de Conclusão por Categoria** (barras agrupadas por formato):
 
-A série temporal de interações mostra fluxo contínuo de estudos, com picos em ciclos quinzenais. Todas as categorias mantêm avaliação média superior a 4,0, indicando satisfação consistente.
+| Categoria | Interações | Taxa de conclusão |
+| --- | ---: | ---: |
+| DevOps & Cloud | 141 | 42,6% |
+| Programação & Software | 104 | 36,8% |
+| Banco de Dados | 128 | 33,3% |
+| Inteligência Artificial | 128 | 32,2% |
+| Ciência de Dados | 120 | 27,0% |
+| Business Intelligence | 144 | 26,9% |
+| Engenharia de Dados | 121 | 22,7% |
+| Segurança & Governança | 114 | 13,2% |
 
-**Fonte:** `gold.kpi_evolucao_dia`
+A distância entre a melhor e a pior categoria é de 29,4 pontos percentuais.
 
-### 3.3 Conversão de Recomendações
+**Fonte:** consulta 2 de `sql/sql_lab.sql` (dataset virtual `vds_conclusao_categoria_mes`).
 
-A taxa de conversão do motor de recomendação está na faixa de **8% a 15%**, considerada excelente no contexto de sistemas educacionais sem interface push.
+### 3.3 Vídeo lidera a conclusão; Curso fica em último
 
-**Fonte:** `gold.kpi_conversao_recomendacao`
+| Formato | Conteúdos | Interações | Taxa de conclusão | Avaliação média | Tempo médio (min) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Vídeo | 238 | 262 | **33,85%** | 4,50 | 29,2 |
+| Podcast | 256 | 250 | 29,20% | 4,43 | 29,9 |
+| Artigo | 272 | 262 | 28,00% | 4,50 | 9,4 |
+| Curso | 234 | 226 | **23,14%** | 4,48 | 563,4 |
 
----
+**Fonte:** `gold.kpi_engajamento_formato`, consulta 4 de `sql/sql_lab.sql`.
 
 ## 4. Descoberta
 
-**Fato observado:** Formatos curtos (Artigo, Podcast, Vídeo) apresentam taxa de conclusão significativamente superior à de Cursos longos (23,1%).
+**Fato observado.** O Vídeo conclui 10,7 pontos percentuais a mais que o Curso, com praticamente a mesma avaliação (4,50 contra 4,48). O Curso exige, em média, 563 minutos de consumo, 19 vezes o tempo de um vídeo.
 
-**Hipótese:** A menor barreira de tempo e a possibilidade de consumo fragmentado explicam a maior retenção dos formatos curtos. Cursos extensos exigem maior comprometimento contínuo do aluno.
+**Fato observado.** A avaliação quase não muda entre formatos: vai de 4,43 a 4,50. O usuário que termina gosta do que consumiu em qualquer formato, então a diferença está em **terminar**, não em gostar.
 
-**Correlação:** A avaliação média não cai nos formatos curtos (permanece acima de 4,5), o que indica que a maior retenção não é resultado de conteúdo mais raso.
+**Hipótese (a validar).** A duração é a principal barreira de conclusão. Um curso de 9 horas tem mais pontos de abandono que um vídeo de 30 minutos.
 
----
+**Hipótese (a validar).** A categoria Segurança & Governança, com 13,2% de conclusão, tem um problema de conteúdo ou de nível, não de formato. Ela fica abaixo da média nos quatro formatos: 6,7% em Vídeo (contra 33,8% no geral), 12,5% em Podcast, 14,8% em Artigo e 16,7% em Curso.
 
-## 5. Ação Recomendada
+## 5. Ação recomendada
 
-Com base nas evidências, recomenda-se:
+1. **Concentrar a produção nova em vídeos**, que têm a maior conclusão com custo de produção menor que o de cursos.
+2. **Quebrar os cursos longos em trilhas de vídeos curtos.** Isso testa diretamente a hipótese da duração: se a conclusão dos módulos subir para perto dos 34% do vídeo, a hipótese se confirma.
+3. **Revisar o catálogo de Segurança & Governança** (nível, pré-requisitos, descrição) antes de produzir mais conteúdo nessa categoria.
+4. **Manter o alerta de conversão** configurado no Superset. A conversão atual (10,22%) está 2,2 pontos acima do limite de 8%; se cair, o motor de recomendação precisa ser revisto antes de qualquer mudança de catálogo.
 
-1. **Priorizar a produção de Artigos e Podcasts temáticos** para tópicos introdutórios, dado o alto desempenho em retenção.
-2. **Quebrar Cursos longos em módulos menores** (microlearning), para reduzir a barreira de conclusão.
-3. **Aplicar gamificação em Cursos extensos**, com metas intermediárias e recompensas.
-4. **Manter o investimento em Vídeos** para tópicos técnicos, onde já apresentam bom desempenho (44% – 50%).
-5. **Monitorar continuamente a conversão de recomendações**, com alerta automático quando cair abaixo de 8%.
+## 6. Fatos, hipóteses e recomendações
 
----
+| Tipo | Afirmação | Base |
+| --- | --- | --- |
+| Fato | Vídeo tem 33,85% de conclusão; Curso, 23,14% | `gold.kpi_engajamento_formato` |
+| Fato | A avaliação média varia só entre 4,43 e 4,50 entre formatos | `gold.kpi_engajamento_formato` |
+| Fato | Conversão de recomendação de 10,22% (meta: 8%) | `gold.kpi_conversao_recomendacao` |
+| Hipótese | A duração do curso é a principal barreira de conclusão | tempo médio de 563 min contra 29 min |
+| Hipótese | Segurança & Governança tem problema de conteúdo | 13,2% de conclusão, a menor entre as categorias |
+| Recomendação | Priorizar vídeo e modularizar cursos | seções 3.3 e 4 |
 
-## 6. Distinção entre Fatos, Hipóteses e Recomendações
+## 7. Limitações
 
-| Tipo | Descrição | Exemplo |
-|---|---|---|
-| **Fato** | Dado observado nos KPIs | Artigos têm taxa de conclusão de 70% |
-| **Hipótese** | Explicação proposta, a validar | A menor barreira de tempo explica a maior retenção |
-| **Recomendação** | Ação sugerida | Priorizar produção de Artigos e Podcasts |
-
----
-
-## 7. Limitações da Análise
-
-- Os dados utilizados são **fictícios**, gerados para o desafio.
-- O modelo de recomendação é **simples** (não é machine learning de verdade).
-- O período de análise é **limitado** (cerca de mil interações).
-- A amostra não representa toda a diversidade de usuários de uma plataforma real.
-
----
-
-## 8. Uso de IA
-
-A IA foi utilizada para:
-- Auxiliar na interpretação dos KPIs e na redação da narrativa.
-- Revisar as consultas SQL Lab.
-- Apoiar a documentação dos metadados no OpenMetadata.
-- Sugerir melhorias no mascaramento e pseudonimização dos dados pessoais.
-
-**Todas as decisões técnicas foram validadas manualmente pela equipe.**
+- Os dados são fictícios, gerados para o desafio; as conclusões valem como exercício de método.
+- São 1000 interações para 1000 conteúdos: a maioria dos conteúdos tem uma ou duas interações. As diferenças entre formatos são de alguns pontos percentuais e podem mudar com mais volume.
+- A taxa de conclusão divide conclusões por inícios e visualizações do mesmo recorte. Um usuário que concluiu sem registro de início conta só no numerador.
+- A conversão de recomendação considera qualquer interação posterior do mesmo usuário com o conteúdo recomendado, sem janela de tempo.

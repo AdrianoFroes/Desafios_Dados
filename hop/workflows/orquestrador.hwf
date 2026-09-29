@@ -2,7 +2,7 @@
 <workflow>
   <name>orquestrador</name>
   <name_sync_with_filename>Y</name_sync_with_filename>
-  <description>Workflow orquestrador (RF22). Ordem: Bronze, Silver, Qualidade, Gold, Publicacao de metadados. Qualidade e Gold publicam a camada analitica. Metadados segue como placeholder do Estudante 3.</description>
+  <description>Workflow orquestrador (RF22). Ordem: Bronze, Silver, Qualidade, Gold, Publicacao de metadados. Qualidade e Gold publicam a camada analitica. Metadados grava o snapshot tecnico da Gold em auditoria.metadados; a ingestao no OpenMetadata roda logo depois (scripts/07_openmetadata_catalogo.ps1).</description>
   <extended_description/>
   <workflow_version/>
   <created_user>-</created_user>
@@ -200,6 +200,22 @@
       <attributes_hac/>
     </action>
     <action>
+      <name>Preparar silver</name>
+      <description>Recarga completa e idempotente: esvazia a Silver antes de reler o lote Bronze mais recente.</description>
+      <type>SQL</type>
+      <attributes/>
+      <sql>TRUNCATE TABLE silver.comentario, silver.interacao, silver.conteudo RESTART IDENTITY;</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>160</xloc>
+      <yloc>144</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
       <name>Silver conteudo</name>
       <description/>
       <type>PIPELINE</type>
@@ -381,7 +397,7 @@
       <description/>
       <type>SQL</type>
       <attributes/>
-      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'qualidade', 'fim', 'sucesso');</sql>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) SELECT '${EXECUCAO_ID}', 'qualidade', 'fim', CASE WHEN EXISTS (SELECT 1 FROM qualidade.resultado WHERE execucao_id = '${EXECUCAO_ID}' AND NOT aprovado) THEN 'sucesso com ressalvas' ELSE 'sucesso' END;</sql>
       <connection>pg_desafio</connection>
       <useVariableSubstitution>Y</useVariableSubstitution>
       <sqlfromfile>N</sqlfromfile>
@@ -470,13 +486,16 @@
       <attributes_hac/>
     </action>
     <action>
-      <name>Metadados (placeholder)</name>
-      <description>Substituir esta acao pelo pipeline de publicacao de metadados quando o Estudante 3 entregar.</description>
-      <type>WRITE_TO_LOG</type>
+      <name>Metadados</name>
+      <description>Grava em auditoria.metadados as tabelas publicadas (schema, linhas, colunas) para a ingestao do OpenMetadata.</description>
+      <type>SQL</type>
       <attributes/>
-      <loglevel>Basic</loglevel>
-      <logsubject>metadados</logsubject>
-      <logmessage>PLACEHOLDER etapa=metadados resultado=placeholder execucao_id=${EXECUCAO_ID}. Aguardando a entrega do Estudante 3. Trocar esta acao pelo pipeline real.</logmessage>
+      <sql>CALL auditoria.publicar_metadados('${EXECUCAO_ID}');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
       <parallel>N</parallel>
       <xloc>1168</xloc>
       <yloc>384</yloc>
@@ -487,7 +506,7 @@
       <description/>
       <type>SQL</type>
       <attributes/>
-      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'metadados', 'fim', 'placeholder');</sql>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'metadados', 'fim', 'sucesso');</sql>
       <connection>pg_desafio</connection>
       <useVariableSubstitution>Y</useVariableSubstitution>
       <sqlfromfile>N</sqlfromfile>
@@ -615,6 +634,22 @@
       <attributes_hac/>
     </action>
     <action>
+      <name>Falha metadados</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO auditoria.etapa (execucao_id, etapa, evento, resultado) VALUES ('${EXECUCAO_ID}', 'metadados', 'fim', 'falha');</sql>
+      <connection>pg_desafio</connection>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>Y</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>1168</xloc>
+      <yloc>544</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
       <name>Registrar falha</name>
       <description/>
       <type>WRITE_TO_LOG</type>
@@ -653,8 +688,10 @@
     <hop><from>Bronze comentarios</from><to>Falha bronze</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Fim bronze</from><to>Inicio silver</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Fim bronze</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
-    <hop><from>Inicio silver</from><to>Silver conteudo</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio silver</from><to>Preparar silver</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Inicio silver</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Preparar silver</from><to>Silver conteudo</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Preparar silver</from><to>Falha silver</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Silver conteudo</from><to>Silver interacao</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Silver conteudo</from><to>Falha silver</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Silver interacao</from><to>Silver comentario</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
@@ -677,9 +714,10 @@
     <hop><from>Gold</from><to>Falha gold</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Fim gold</from><to>Inicio metadados</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Fim gold</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
-    <hop><from>Inicio metadados</from><to>Metadados (placeholder)</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Inicio metadados</from><to>Metadados</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Inicio metadados</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
-    <hop><from>Metadados (placeholder)</from><to>Fim metadados</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Metadados</from><to>Fim metadados</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
+    <hop><from>Metadados</from><to>Falha metadados</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Fim metadados</from><to>Resumo da execucao</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Fim metadados</from><to>Abortar</to><enabled>Y</enabled><evaluation>N</evaluation><unconditional>N</unconditional></hop>
     <hop><from>Resumo da execucao</from><to>Resultado final</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>N</unconditional></hop>
@@ -689,6 +727,7 @@
     <hop><from>Falha silver</from><to>Registrar falha</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
     <hop><from>Falha qualidade</from><to>Registrar falha</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
     <hop><from>Falha gold</from><to>Registrar falha</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
+    <hop><from>Falha metadados</from><to>Registrar falha</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
     <hop><from>Registrar falha</from><to>Abortar</to><enabled>Y</enabled><evaluation>Y</evaluation><unconditional>Y</unconditional></hop>
   </hops>
   <notepads/>

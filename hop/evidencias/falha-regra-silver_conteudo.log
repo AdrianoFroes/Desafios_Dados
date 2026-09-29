@@ -1,0 +1,17 @@
+﻿2026/09/29 02:17:38 - HopRun - Referencing environment 'docker-env' for project desafio_dados_2' in null
+2026/09/29 02:17:38 - HopRun - Enabling project 'desafio_dados_2'
+2026/09/29 02:17:38 - HopRun - Two-way password encoder initialized with plugin ID 'Hop' for project 'desafio_dados_2'
+2026/09/29 02:17:38 - HopRun - Starting pipeline: /files/pipelines/silver_conteudo.hpl
+2026/09/29 02:17:38 - silver_conteudo - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:38 - silver_conteudo - Execution started for pipeline [silver_conteudo]
+2026/09/29 02:17:38 - Gravar Silver.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:38 - Gravar quarentena.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:38 - Ler Bronze e aplicar regras.0 - Finished reading query, closing connection.
+2026/09/29 02:17:38 - Ler Bronze e aplicar regras.0 - Finished processing (I=1000, O=0, R=0, W=1000, U=0, E=0)
+2026/09/29 02:17:38 - Get Variables.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:38 - Aprovado ou quarentena?.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:38 - Gravar Silver.0 - Finished processing (I=0, O=1000, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:39 - Arquivo Silver.0 - Finished processing (I=0, O=1001, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:39 - silver_conteudo - Pipeline duration : 0.598 seconds [  0.598" ]
+HopRun exit.
+2026/09/29 02:17:39 - silver_conteudo - Execution finished on a local pipeline engine with run configuration 'local'

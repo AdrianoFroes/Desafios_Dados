@@ -1,0 +1,19 @@
+﻿2026/09/29 02:14:41 - HopRun - Referencing environment 'docker-env' for project desafio_dados_2' in null
+2026/09/29 02:14:41 - HopRun - Enabling project 'desafio_dados_2'
+2026/09/29 02:14:41 - HopRun - Two-way password encoder initialized with plugin ID 'Hop' for project 'desafio_dados_2'
+2026/09/29 02:14:41 - HopRun - Starting pipeline: /files/pipelines/qualidade.hpl
+2026/09/29 02:14:41 - qualidade - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:14:41 - qualidade - Execution started for pipeline [qualidade]
+2026/09/29 02:14:41 - Aplicar testes.0 - Finished reading query, closing connection.
+2026/09/29 02:14:41 - Logar qualidade.0 - 
+2026/09/29 02:14:41 - Logar qualidade.0 - ------------> Linenr 1------------------------------
+2026/09/29 02:14:41 - Logar qualidade.0 - QUALIDADE APLICADA
+2026/09/29 02:14:41 - Logar qualidade.0 - 
+2026/09/29 02:14:41 - Logar qualidade.0 - status = sucesso
+2026/09/29 02:14:41 - Logar qualidade.0 - 
+2026/09/29 02:14:41 - Logar qualidade.0 - ====================
+2026/09/29 02:14:41 - Logar qualidade.0 - Finished processing (I=0, O=0, R=1, W=1, U=0, E=0)
+2026/09/29 02:14:41 - Aplicar testes.0 - Finished processing (I=1, O=0, R=0, W=1, U=0, E=0)
+2026/09/29 02:14:41 - qualidade - Pipeline duration : 0.336 seconds [  0.336" ]
+HopRun exit.
+2026/09/29 02:14:41 - qualidade - Execution finished on a local pipeline engine with run configuration 'local'

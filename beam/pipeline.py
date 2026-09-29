@@ -18,7 +18,9 @@ Uso, na raiz do projeto, com a Silver já carregada:
 from __future__ import annotations
 
 import argparse
+import csv
 import json
+import platform
 import shutil
 import sys
 import time
@@ -28,6 +30,7 @@ from pathlib import Path
 import apache_beam as beam
 import psycopg2
 import pyarrow as pa
+import pyarrow.dataset  # noqa: F401  (registra pa.dataset)
 import pyarrow.parquet as pq
 from apache_beam.options.pipeline_options import PipelineOptions, SetupOptions
 from psycopg2.extras import RealDictCursor
@@ -40,6 +43,7 @@ from src.config import load_config  # noqa: E402
 
 PASTA_INTERACAO = RAIZ / "dados" / "gold" / "parquet" / "interacao"
 PASTA_JSON = RAIZ / "dados" / "gold" / "comparacao" / "interacao.json"
+PASTA_CSV = RAIZ / "dados" / "gold" / "comparacao" / "interacao.csv"
 PASTA_FATO = RAIZ / "dados" / "gold" / "parquet" / "engajamento_dia"
 PASTA_EVIDENCIA = RAIZ / "beam" / "evidencias"
 PASTA_QUALIDADE = RAIZ / "qualidade" / "resultados"
@@ -150,13 +154,41 @@ def medir_leitura(registros):
         encoding="utf-8",
     )
 
+    with PASTA_CSV.open("w", encoding="utf-8", newline="") as arquivo:
+        escritor = csv.DictWriter(arquivo, fieldnames=list(payload[0].keys()))
+        escritor.writeheader()
+        escritor.writerows(payload)
+
+    # Sem esquema explicito, versoes recentes do pyarrow inferem ano/mes como int32.
+    particionamento = pa.dataset.partitioning(
+        pa.schema([("ano", pa.string()), ("mes", pa.string())]), flavor="hive"
+    )
     inicio = time.perf_counter()
-    parquet = pq.read_table(PASTA_INTERACAO)
+    parquet = pq.read_table(PASTA_INTERACAO, partitioning=particionamento)
     tempo_parquet = time.perf_counter() - inicio
 
     inicio = time.perf_counter()
     json.loads(PASTA_JSON.read_text(encoding="utf-8"))
     tempo_json = time.perf_counter() - inicio
+
+    inicio = time.perf_counter()
+    with PASTA_CSV.open(encoding="utf-8", newline="") as arquivo:
+        linhas_csv = sum(1 for _ in csv.DictReader(arquivo))
+    tempo_csv = time.perf_counter() - inicio
+
+    # Mesmo recorte de um mes: o Parquet le so a particao; JSON le tudo e filtra.
+    mes_alvo = registros[0]["mes"]
+    inicio = time.perf_counter()
+    parquet_mes = pq.read_table(
+        PASTA_INTERACAO, partitioning=particionamento, filters=[("mes", "=", mes_alvo)]
+    )
+    tempo_parquet_mes = time.perf_counter() - inicio
+    inicio = time.perf_counter()
+    json_mes = [
+        item for item in json.loads(PASTA_JSON.read_text(encoding="utf-8"))
+        if item["mes"] == mes_alvo
+    ]
+    tempo_json_mes = time.perf_counter() - inicio
 
     particoes = sorted(
         {
@@ -172,8 +204,19 @@ def medir_leitura(registros):
             caminho.stat().st_size for caminho in PASTA_INTERACAO.rglob("*.parquet")
         ),
         "bytes_json": PASTA_JSON.stat().st_size,
+        "bytes_csv": PASTA_CSV.stat().st_size,
+        "linhas_csv": linhas_csv,
         "segundos_leitura_parquet": round(tempo_parquet, 6),
         "segundos_leitura_json": round(tempo_json, 6),
+        "segundos_leitura_csv": round(tempo_csv, 6),
+        "recorte_um_mes": {
+            "mes": mes_alvo,
+            "linhas_parquet": parquet_mes.num_rows,
+            "linhas_json": len(json_mes),
+            "segundos_parquet_com_poda": round(tempo_parquet_mes, 6),
+            "segundos_json_filtrado": round(tempo_json_mes, 6),
+        },
+        "tipos_preservados": {campo.name: str(campo.type) for campo in parquet.schema},
         "estrategia": "particao hive por ano e mes de data_hora",
         "justificativa": (
             "O consumo analitico filtra por periodo. A particao mensal permite "
@@ -420,6 +463,15 @@ def main():
     print(f"DirectRunner: {direto['linhas']} linhas em {direto['segundos']}s.")
 
     spark = {"executado": False}
+    anterior = PASTA_EVIDENCIA / "medicoes.json"
+    if args.pular_spark and anterior.exists():
+        registro_anterior = json.loads(anterior.read_text(encoding="utf-8"))
+        if registro_anterior.get("spark", {}).get("executado"):
+            spark = dict(registro_anterior["spark"])
+            spark.setdefault("execucao_id_origem", registro_anterior["execucao_id"])
+            spark["observacao"] = (
+                "Spark nao rodou nesta execucao (--pular-spark); registro mantido da execucao anterior."
+            )
     if not args.pular_spark:
         try:
             resultado, tabela_spark = executar_beam(
@@ -474,6 +526,13 @@ def main():
         "comparacao_gold": comparacao_gold,
         "qualidade": evidencia_qualidade,
         "regra": "conclusao = tipo conclusão OU percentual_conclusao >= 100",
+        "configuracao": {
+            "python": platform.python_version(),
+            "apache_beam": beam.__version__,
+            "pyarrow": pa.__version__,
+            "spark_job_server": "apache/beam_spark3_job_server:2.76.0 (--spark-master-url=local[2])",
+            "sistema": platform.platform(),
+        },
     }
     destino = PASTA_EVIDENCIA / "medicoes.json"
     destino.write_text(

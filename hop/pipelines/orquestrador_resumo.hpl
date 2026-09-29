@@ -35,6 +35,7 @@ WITH etapas AS (
 final AS (
   SELECT CASE
     WHEN EXISTS (SELECT 1 FROM etapas WHERE resultado = 'falha') THEN 'falha'
+    WHEN EXISTS (SELECT 1 FROM etapas WHERE resultado = 'sucesso com ressalvas') THEN 'sucesso com ressalvas'
     WHEN EXISTS (
       SELECT 1 FROM quarentena.registro
       WHERE execucao_id = '${EXECUCAO_ID}' AND status = 'pendente'

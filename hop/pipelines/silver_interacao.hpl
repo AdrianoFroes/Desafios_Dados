@@ -41,6 +41,9 @@ WITH base AS (
     to_jsonb(b) AS payload_original,
     b.ctid AS linha_ctid
   FROM bronze.interacoes b
+  WHERE b.execucao_id = (
+    SELECT execucao_id FROM bronze.interacoes ORDER BY data_hora_ingestao DESC LIMIT 1
+  )
 ),
 padronizado AS (
   SELECT *,
@@ -126,7 +129,8 @@ SELECT
   ('interacoes:usuario_id=' || COALESCE(usuario_id_raw, 'NULL')
     || ',conteudo_id=' || COALESCE(conteudo_id_raw, 'NULL')
     || ',data_hora=' || COALESCE(data_hora_raw, 'NULL')) AS registro_id,
-  payload_original::text AS payload_original
+  payload_original::text AS payload_original,
+  to_char(clock_timestamp(), 'YYYY-MM-DD"T"HH24:MI:SS') AS data_ocorrencia
 FROM regras
 ]]></sql>
     <sql_from_file/>
@@ -572,6 +576,14 @@ FROM regras
       <field>
         <name>execucao_id_silver</name>
         <element>execucao_id</element>
+      </field>
+      <field>
+        <name>data_ocorrencia</name>
+        <element>data</element>
+      </field>
+      <field>
+        <name>payload_original</name>
+        <element>payload_original</element>
       </field>
     </fields>
     <addToResult>N</addToResult>

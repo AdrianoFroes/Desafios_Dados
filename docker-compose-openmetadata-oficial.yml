@@ -9,7 +9,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-version: "3.9"
 volumes:
   ingestion-volume-dag-airflow:
   ingestion-volume-dags:
@@ -27,7 +26,7 @@ services:
     expose:
       - 5432
     ports:
-      - "5432:5432"
+      - "${OM_POSTGRES_PORT:-5437}:5432"
     volumes:
      - ./docker-volume/db-data-postgres:/var/lib/postgresql/data
     
@@ -48,9 +47,8 @@ services:
       - xpack.security.enabled=false
     networks:
       - app_net
-    ports:
-      - "9200:9200"
-      - "9300:9300"
+    expose:
+      - 9200
     healthcheck:
       test: "curl -s http://localhost:9200/_cluster/health?pretty | grep status | grep -qE 'green|yellow' || exit 1"
       interval: 15s
@@ -478,13 +476,16 @@ services:
     expose:
       - 8080
     ports:
-      - "8080:8080"
+      - "${OM_AIRFLOW_PORT:-8090}:8080"
     networks:
       - app_net
     volumes:
       - ingestion-volume-dag-airflow:/opt/airflow/dag_generated_configs
       - ingestion-volume-dags:/opt/airflow/dags
       - ingestion-volume-tmp:/tmp
+      - ./openmetadata/ingestao:/opt/ingestao:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 networks:
   app_net:

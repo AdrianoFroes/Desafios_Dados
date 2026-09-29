@@ -46,7 +46,7 @@ FROM (
     (payload_original::jsonb ->> 'data_hora_ingestao')::timestamp AS data_hora_ingestao,
     payload_original::jsonb ->> 'execucao_id'        AS execucao_id_bronze
   FROM quarentena.registro
-  WHERE status = 'pendente'
+  WHERE status = 'pendente' AND origem = 'catalogo'
   ORDER BY registro_id, id DESC
 ) q
 ]]></sql>

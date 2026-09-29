@@ -1,0 +1,274 @@
+﻿2026/09/29 02:17:24 - HopRun - Referencing environment 'docker-env' for project desafio_dados_2' in null
+2026/09/29 02:17:24 - HopRun - Enabling project 'desafio_dados_2'
+2026/09/29 02:17:24 - HopRun - Two-way password encoder initialized with plugin ID 'Hop' for project 'desafio_dados_2'
+2026/09/29 02:17:24 - HopRun - Starting workflow: /files/workflows/orquestrador.hwf
+2026/09/29 02:17:24 - orquestrador - Start of workflow execution
+2026/09/29 02:17:24 - orquestrador - Starting action [Start]
+2026/09/29 02:17:24 - orquestrador - Finished action [Start] (result=[true])
+2026/09/29 02:17:24 - orquestrador - Starting action [Gerar execucao_id]
+2026/09/29 02:17:24 - Gerar execucao_id - Using run configuration [local]
+2026/09/29 02:17:24 - orquestrador_inicio - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:24 - orquestrador_inicio - Execution started for pipeline [orquestrador_inicio]
+2026/09/29 02:17:24 - Definir execucao_id.0 - Finished reading query, closing connection.
+2026/09/29 02:17:24 - Publicar execucao_id.0 - Setting project variables...
+2026/09/29 02:17:24 - Publicar execucao_id.0 - Set variable EXECUCAO_ID to value [orquestrador-ok]
+2026/09/29 02:17:24 - Definir execucao_id.0 - Finished processing (I=1, O=0, R=0, W=1, U=0, E=0)
+2026/09/29 02:17:24 - Publicar execucao_id.0 - Finished after 1 rows.
+2026/09/29 02:17:24 - Publicar execucao_id.0 - Finished processing (I=0, O=0, R=1, W=1, U=0, E=0)
+2026/09/29 02:17:24 - orquestrador_inicio - Pipeline duration : 0.338 seconds [  0.338" ]
+2026/09/29 02:17:24 - orquestrador - Finished action [Gerar execucao_id] (result=[true])
+2026/09/29 02:17:24 - orquestrador_inicio - Execution finished on a local pipeline engine with run configuration 'local'
+2026/09/29 02:17:24 - orquestrador - Starting action [Inicio bronze]
+2026/09/29 02:17:24 - orquestrador - Finished action [Inicio bronze] (result=[true])
+2026/09/29 02:17:24 - orquestrador - Starting action [Bronze catalogo]
+2026/09/29 02:17:24 - Bronze catalogo - Using run configuration [local]
+2026/09/29 02:17:24 - bronze_catalogo - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:24 - bronze_catalogo - Execution started for pipeline [bronze_catalogo]
+2026/09/29 02:17:24 - Table Output.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:24 - Create Bronze Schema.0 - Finished reading query, closing connection.
+2026/09/29 02:17:24 - Create Bronze Schema.0 - Finished processing (I=0, O=0, R=0, W=1, U=0, E=0)
+2026/09/29 02:17:24 - CSV File Input.0 - Header row skipped in file '/dados/brutos/catalogo.csv'
+2026/09/29 02:17:24 - CSV File Input.0 - Finished processing (I=1001, O=0, R=0, W=1000, U=0, E=0)
+2026/09/29 02:17:24 - Add constants.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:24 - Get Variables.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:24 - Get System Info.0 - Finished processing (I=0, O=0, R=1000, W=2000, U=0, E=0)
+2026/09/29 02:17:24 - Table Output.0 - Finished processing (I=0, O=1000, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:24 - Text File Output.0 - Finished processing (I=0, O=1001, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:24 - bronze_catalogo - Pipeline duration : 0.156 seconds [  0.156" ]
+2026/09/29 02:17:24 - bronze_catalogo - Execution finished on a local pipeline engine with run configuration 'local'
+2026/09/29 02:17:24 - orquestrador - Finished action [Bronze catalogo] (result=[true])
+2026/09/29 02:17:24 - orquestrador - Starting action [Bronze interacoes]
+2026/09/29 02:17:24 - Bronze interacoes - Using run configuration [local]
+2026/09/29 02:17:24 - bronze_interacoes - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:24 - bronze_interacoes - Execution started for pipeline [bronze_interacoes]
+2026/09/29 02:17:24 - Table Output.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:24 - JSON Input.0 - Finished processing (I=1000, O=0, R=0, W=1000, U=0, E=0)
+2026/09/29 02:17:24 - Add constants.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:24 - Get Variables.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:24 - Get System Info.0 - Finished processing (I=0, O=0, R=1000, W=2000, U=0, E=0)
+2026/09/29 02:17:25 - Table Output.0 - Finished processing (I=0, O=1000, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - JSON Output.0 - Finished processing (I=0, O=1000, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - bronze_interacoes - Pipeline duration : 0.151 seconds [  0.151" ]
+2026/09/29 02:17:25 - bronze_interacoes - Execution finished on a local pipeline engine with run configuration 'local'
+2026/09/29 02:17:25 - orquestrador - Finished action [Bronze interacoes] (result=[true])
+2026/09/29 02:17:25 - orquestrador - Starting action [Bronze comentarios]
+2026/09/29 02:17:25 - Bronze comentarios - Using run configuration [local]
+2026/09/29 02:17:25 - bronze_comentarios - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:25 - bronze_comentarios - Execution started for pipeline [bronze_comentarios]
+2026/09/29 02:17:25 - Table Output.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:25 - JSON Input.0 - Finished processing (I=1000, O=0, R=0, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - Add constants.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - Get Variables.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - Get System Info.0 - Finished processing (I=0, O=0, R=1000, W=2000, U=0, E=0)
+2026/09/29 02:17:25 - Table Output.0 - Finished processing (I=0, O=1000, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - JSON Output.0 - Finished processing (I=0, O=1000, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - bronze_comentarios - Pipeline duration : 0.118 seconds [  0.118" ]
+2026/09/29 02:17:25 - orquestrador - Finished action [Bronze comentarios] (result=[true])
+2026/09/29 02:17:25 - bronze_comentarios - Execution finished on a local pipeline engine with run configuration 'local'
+2026/09/29 02:17:25 - orquestrador - Starting action [Fim bronze]
+2026/09/29 02:17:25 - orquestrador - Finished action [Fim bronze] (result=[true])
+2026/09/29 02:17:25 - orquestrador - Starting action [Inicio silver]
+2026/09/29 02:17:25 - orquestrador - Finished action [Inicio silver] (result=[true])
+2026/09/29 02:17:25 - orquestrador - Starting action [Preparar silver]
+2026/09/29 02:17:25 - orquestrador - Finished action [Preparar silver] (result=[true])
+2026/09/29 02:17:25 - orquestrador - Starting action [Silver conteudo]
+2026/09/29 02:17:25 - Silver conteudo - Using run configuration [local]
+2026/09/29 02:17:25 - silver_conteudo - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:25 - silver_conteudo - Execution started for pipeline [silver_conteudo]
+2026/09/29 02:17:25 - Gravar quarentena.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:25 - Gravar Silver.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:25 - Ler Bronze e aplicar regras.0 - Finished reading query, closing connection.
+2026/09/29 02:17:25 - Ler Bronze e aplicar regras.0 - Finished processing (I=1000, O=0, R=0, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - Get Variables.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - Aprovado ou quarentena?.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - Gravar Silver.0 - Finished processing (I=0, O=1000, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - Arquivo Silver.0 - Finished processing (I=0, O=1001, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - silver_conteudo - Pipeline duration : 0.214 seconds [  0.214" ]
+2026/09/29 02:17:25 - silver_conteudo - Execution finished on a local pipeline engine with run configuration 'local'
+2026/09/29 02:17:25 - orquestrador - Finished action [Silver conteudo] (result=[true])
+2026/09/29 02:17:25 - orquestrador - Starting action [Silver interacao]
+2026/09/29 02:17:25 - Silver interacao - Using run configuration [local]
+2026/09/29 02:17:25 - silver_interacao - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:25 - silver_interacao - Execution started for pipeline [silver_interacao]
+2026/09/29 02:17:25 - Gravar Silver.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:25 - Gravar quarentena.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:25 - Ler Bronze e aplicar regras.0 - Finished reading query, closing connection.
+2026/09/29 02:17:25 - Ler Bronze e aplicar regras.0 - Finished processing (I=1000, O=0, R=0, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - Get Variables.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - Aprovado ou quarentena?.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - Gravar Silver.0 - Finished processing (I=0, O=1000, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - Arquivo Silver.0 - Finished processing (I=0, O=1001, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:25 - silver_interacao - Pipeline duration : 0.289 seconds [  0.289" ]
+2026/09/29 02:17:25 - silver_interacao - Execution finished on a local pipeline engine with run configuration 'local'
+2026/09/29 02:17:25 - orquestrador - Finished action [Silver interacao] (result=[true])
+2026/09/29 02:17:25 - orquestrador - Starting action [Silver comentario]
+2026/09/29 02:17:25 - Silver comentario - Using run configuration [local]
+2026/09/29 02:17:25 - silver_comentario - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:25 - silver_comentario - Execution started for pipeline [silver_comentario]
+2026/09/29 02:17:26 - Gravar quarentena.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:26 - Gravar Silver.0 - Connected to database [pg_desafio] (commit=1000)
+2026/09/29 02:17:26 - Ler Bronze e aplicar regras.0 - Finished reading query, closing connection.
+2026/09/29 02:17:26 - Ler Bronze e aplicar regras.0 - Finished processing (I=1000, O=0, R=0, W=1000, U=0, E=0)
+2026/09/29 02:17:26 - Get Variables.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:26 - Aprovado ou quarentena?.0 - Finished processing (I=0, O=0, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:26 - Gravar Silver.0 - Finished processing (I=0, O=1000, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:26 - Arquivo Silver.0 - Finished processing (I=0, O=1001, R=1000, W=1000, U=0, E=0)
+2026/09/29 02:17:26 - silver_comentario - Pipeline duration : 0.177 seconds [  0.177" ]
+2026/09/29 02:17:26 - silver_comentario - Execution finished on a local pipeline engine with run configuration 'local'
+2026/09/29 02:17:26 - orquestrador - Finished action [Silver comentario] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Fim silver]
+2026/09/29 02:17:26 - orquestrador - Finished action [Fim silver] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Inicio qualidade]
+2026/09/29 02:17:26 - orquestrador - Finished action [Inicio qualidade] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Qualidade]
+2026/09/29 02:17:26 - Qualidade - Using run configuration [local]
+2026/09/29 02:17:26 - qualidade - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:26 - qualidade - Execution started for pipeline [qualidade]
+2026/09/29 02:17:26 - Aplicar testes.0 - Finished reading query, closing connection.
+2026/09/29 02:17:26 - Logar qualidade.0 - 
+2026/09/29 02:17:26 - Logar qualidade.0 - ------------> Linenr 1------------------------------
+2026/09/29 02:17:26 - Logar qualidade.0 - QUALIDADE APLICADA
+2026/09/29 02:17:26 - Logar qualidade.0 - 
+2026/09/29 02:17:26 - Logar qualidade.0 - status = sucesso
+2026/09/29 02:17:26 - Logar qualidade.0 - 
+2026/09/29 02:17:26 - Logar qualidade.0 - ====================
+2026/09/29 02:17:26 - Aplicar testes.0 - Finished processing (I=1, O=0, R=0, W=1, U=0, E=0)
+2026/09/29 02:17:26 - Logar qualidade.0 - Finished processing (I=0, O=0, R=1, W=1, U=0, E=0)
+2026/09/29 02:17:26 - qualidade - Pipeline duration : 0.035 seconds [  0.035" ]
+2026/09/29 02:17:26 - qualidade - Execution finished on a local pipeline engine with run configuration 'local'
+2026/09/29 02:17:26 - orquestrador - Finished action [Qualidade] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Gate qualidade]
+2026/09/29 02:17:26 - Gate qualidade - Using run configuration [local]
+2026/09/29 02:17:26 - qualidade_gate - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:26 - qualidade_gate - Execution started for pipeline [qualidade_gate]
+2026/09/29 02:17:26 - Bloquear se critico.0 - Finished reading query, closing connection.
+2026/09/29 02:17:26 - Logar gate.0 - 
+2026/09/29 02:17:26 - Logar gate.0 - ------------> Linenr 1------------------------------
+2026/09/29 02:17:26 - Logar gate.0 - QUALIDADE LIBEROU A GOLD
+2026/09/29 02:17:26 - Logar gate.0 - 
+2026/09/29 02:17:26 - Logar gate.0 - status = liberado
+2026/09/29 02:17:26 - Logar gate.0 - 
+2026/09/29 02:17:26 - Logar gate.0 - ====================
+2026/09/29 02:17:26 - Bloquear se critico.0 - Finished processing (I=1, O=0, R=0, W=1, U=0, E=0)
+2026/09/29 02:17:26 - Logar gate.0 - Finished processing (I=0, O=0, R=1, W=1, U=0, E=0)
+2026/09/29 02:17:26 - qualidade_gate - Pipeline duration : 0.03 seconds [  0.030" ]
+2026/09/29 02:17:26 - qualidade_gate - Execution finished on a local pipeline engine with run configuration 'local'
+2026/09/29 02:17:26 - orquestrador - Finished action [Gate qualidade] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Fim qualidade]
+2026/09/29 02:17:26 - orquestrador - Finished action [Fim qualidade] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Inicio gold]
+2026/09/29 02:17:26 - orquestrador - Finished action [Inicio gold] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Gold]
+2026/09/29 02:17:26 - Gold - Using run configuration [local]
+2026/09/29 02:17:26 - gold - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:26 - gold - Execution started for pipeline [gold]
+2026/09/29 02:17:26 - Publicar gold.0 - Finished reading query, closing connection.
+2026/09/29 02:17:26 - Logar gold.0 - 
+2026/09/29 02:17:26 - Logar gold.0 - ------------> Linenr 1------------------------------
+2026/09/29 02:17:26 - Logar gold.0 - GOLD PUBLICADA
+2026/09/29 02:17:26 - Logar gold.0 - 
+2026/09/29 02:17:26 - Logar gold.0 - status = publicado
+2026/09/29 02:17:26 - Logar gold.0 - 
+2026/09/29 02:17:26 - Logar gold.0 - ====================
+2026/09/29 02:17:26 - Logar gold.0 - Finished processing (I=0, O=0, R=1, W=1, U=0, E=0)
+2026/09/29 02:17:26 - Publicar gold.0 - Finished processing (I=1, O=0, R=0, W=1, U=0, E=0)
+2026/09/29 02:17:26 - gold - Pipeline duration : 0.091 seconds [  0.091" ]
+2026/09/29 02:17:26 - gold - Execution finished on a local pipeline engine with run configuration 'local'
+2026/09/29 02:17:26 - orquestrador - Finished action [Gold] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Fim gold]
+2026/09/29 02:17:26 - orquestrador - Finished action [Fim gold] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Inicio metadados]
+2026/09/29 02:17:26 - orquestrador - Finished action [Inicio metadados] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Metadados]
+2026/09/29 02:17:26 - orquestrador - Finished action [Metadados] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Fim metadados]
+2026/09/29 02:17:26 - orquestrador - Finished action [Fim metadados] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Resumo da execucao]
+2026/09/29 02:17:26 - Resumo da execucao - Using run configuration [local]
+2026/09/29 02:17:26 - orquestrador_resumo - Executing this pipeline using the Local Pipeline Engine with run configuration 'local'
+2026/09/29 02:17:26 - orquestrador_resumo - Execution started for pipeline [orquestrador_resumo]
+2026/09/29 02:17:26 - Publicar resultado.0 - Setting project variables...
+2026/09/29 02:17:26 - Resultado final.0 - Finished reading query, closing connection.
+2026/09/29 02:17:26 - Publicar resultado.0 - Set variable RESULTADO_FINAL to value [sucesso]
+2026/09/29 02:17:26 - Resultado final.0 - Finished processing (I=1, O=0, R=0, W=1, U=0, E=0)
+2026/09/29 02:17:26 - Publicar resultado.0 - Finished after 1 rows.
+2026/09/29 02:17:26 - Publicar resultado.0 - Finished processing (I=0, O=0, R=1, W=1, U=0, E=0)
+2026/09/29 02:17:26 - Calcular duracao e resultado.0 - Finished reading query, closing connection.
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - ------------> Linenr 1------------------------------
+2026/09/29 02:17:26 - Logar resumo.0 - RESUMO DA EXECUCAO
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - execucao_id = orquestrador-ok
+2026/09/29 02:17:26 - Logar resumo.0 - etapa = bronze
+2026/09/29 02:17:26 - Logar resumo.0 - inicio = 2026-09-29 02:17:24
+2026/09/29 02:17:26 - Logar resumo.0 - fim = 2026-09-29 02:17:25
+2026/09/29 02:17:26 - Logar resumo.0 - duracao_segundos = 0.558
+2026/09/29 02:17:26 - Logar resumo.0 - resultado = sucesso
+2026/09/29 02:17:26 - Logar resumo.0 - resultado_final = sucesso
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - ====================
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - ------------> Linenr 2------------------------------
+2026/09/29 02:17:26 - Logar resumo.0 - RESUMO DA EXECUCAO
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - execucao_id = orquestrador-ok
+2026/09/29 02:17:26 - Logar resumo.0 - etapa = silver
+2026/09/29 02:17:26 - Logar resumo.0 - inicio = 2026-09-29 02:17:25
+2026/09/29 02:17:26 - Logar resumo.0 - fim = 2026-09-29 02:17:26
+2026/09/29 02:17:26 - Logar resumo.0 - duracao_segundos = 0.925
+2026/09/29 02:17:26 - Logar resumo.0 - resultado = sucesso
+2026/09/29 02:17:26 - Logar resumo.0 - resultado_final = sucesso
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - ====================
+2026/09/29 02:17:26 - Calcular duracao e resultado.0 - Finished processing (I=5, O=0, R=0, W=5, U=0, E=0)
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - ------------> Linenr 3------------------------------
+2026/09/29 02:17:26 - Logar resumo.0 - RESUMO DA EXECUCAO
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - execucao_id = orquestrador-ok
+2026/09/29 02:17:26 - Logar resumo.0 - etapa = qualidade
+2026/09/29 02:17:26 - Logar resumo.0 - inicio = 2026-09-29 02:17:26
+2026/09/29 02:17:26 - Logar resumo.0 - fim = 2026-09-29 02:17:26
+2026/09/29 02:17:26 - Logar resumo.0 - duracao_segundos = 0.151
+2026/09/29 02:17:26 - Logar resumo.0 - resultado = sucesso
+2026/09/29 02:17:26 - Logar resumo.0 - resultado_final = sucesso
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - ====================
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - ------------> Linenr 4------------------------------
+2026/09/29 02:17:26 - Logar resumo.0 - RESUMO DA EXECUCAO
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - execucao_id = orquestrador-ok
+2026/09/29 02:17:26 - Logar resumo.0 - etapa = gold
+2026/09/29 02:17:26 - Logar resumo.0 - inicio = 2026-09-29 02:17:26
+2026/09/29 02:17:26 - Logar resumo.0 - fim = 2026-09-29 02:17:26
+2026/09/29 02:17:26 - Logar resumo.0 - duracao_segundos = 0.15
+2026/09/29 02:17:26 - Logar resumo.0 - resultado = sucesso
+2026/09/29 02:17:26 - Logar resumo.0 - resultado_final = sucesso
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - ====================
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - ------------> Linenr 5------------------------------
+2026/09/29 02:17:26 - Logar resumo.0 - RESUMO DA EXECUCAO
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - execucao_id = orquestrador-ok
+2026/09/29 02:17:26 - Logar resumo.0 - etapa = metadados
+2026/09/29 02:17:26 - Logar resumo.0 - inicio = 2026-09-29 02:17:26
+2026/09/29 02:17:26 - Logar resumo.0 - fim = 2026-09-29 02:17:26
+2026/09/29 02:17:26 - Logar resumo.0 - duracao_segundos = 0.067
+2026/09/29 02:17:26 - Logar resumo.0 - resultado = sucesso
+2026/09/29 02:17:26 - Logar resumo.0 - resultado_final = sucesso
+2026/09/29 02:17:26 - Logar resumo.0 - 
+2026/09/29 02:17:26 - Logar resumo.0 - ====================
+2026/09/29 02:17:26 - Logar resumo.0 - Finished processing (I=0, O=0, R=5, W=5, U=0, E=0)
+2026/09/29 02:17:26 - orquestrador_resumo - Pipeline duration : 0.065 seconds [  0.065" ]
+2026/09/29 02:17:26 - orquestrador_resumo - Execution finished on a local pipeline engine with run configuration 'local'
+2026/09/29 02:17:26 - orquestrador - Finished action [Resumo da execucao] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Resultado final]
+2026/09/29 02:17:26 - resultado - FIM workflow resultado=sucesso execucao_id=orquestrador-ok
+2026/09/29 02:17:26 - orquestrador - Finished action [Resultado final] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Starting action [Sucesso]
+2026/09/29 02:17:26 - orquestrador - Finished action [Sucesso] (result=[true])
+2026/09/29 02:17:26 - orquestrador - Workflow execution finished
+2026/09/29 02:17:26 - orquestrador - Workflow duration : 2.479 seconds [  2.479" ]
+HopRun exit.

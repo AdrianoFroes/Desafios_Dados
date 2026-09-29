@@ -1,0 +1,9 @@
+﻿2026-09-28T21:24:40 AVALIACAO_ALERTA: value=10.22 condicao='value < 8' dispara=False
+2026-09-28T21:57:34 AVALIACAO_ALERTA: value=10.22 condicao='value < 8' dispara=False
+2026-09-28T22:01:23 AVALIACAO_ALERTA: value=10.22 condicao='value < 8' dispara=False
+2026-09-28T22:05:39 AVALIACAO_ALERTA: value=10.22 condicao='value < 8' dispara=False
+2026-09-28T22:06:06 EMAIL_ALERTA: para=admin@ficdev.local assunto='[Report]  Error occurred for Alert: DemonstraÃ§Ã£o de disparo do alerta de conversÃ£o' enviado=2026-09-29T02:06:00.136Z
+2026-09-28T22:06:45 AVALIACAO_ALERTA: value=10.22 condicao='value < 8' dispara=False
+2026-09-28T22:09:11 AVALIACAO_ALERTA: value=10.22 condicao='value < 8' dispara=False
+2026-09-28T22:10:18 EMAIL_ALERTA: para=aluno3@ficticio.edu.br assunto='[Report]  DemonstraÃ§Ã£o de disparo do alerta de conversÃ£o: Taxa de ConclusÃ£o por Categoria' enviado=2026-09-29T02:10:00.147Z
+2026-09-28T22:16:27 AVALIACAO_ALERTA: value=10.22 condicao='value < 8' dispara=False
