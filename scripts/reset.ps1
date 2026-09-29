@@ -33,10 +33,7 @@ END `$`$;
 Invoke-Psql $sql | Out-Null
 
 Write-Etapa "Apagando arquivos gerados"
-foreach ($pasta in 'dados/bronze', 'dados/silver') {
-    if (Test-Path $pasta) { Remove-Item -Recurse -Force $pasta }
-}
-Get-ChildItem dados/quarentena -Filter 'registros_quarentena_*.json' -ErrorAction SilentlyContinue | Remove-Item -Force
+Remove-Gerado @('dados/bronze', 'dados/silver', 'dados/quarentena/registros_quarentena_*.json')
 
 if ($Superset) {
     Write-Etapa "Recriando o volume de metadados do Superset"

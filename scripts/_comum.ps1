@@ -19,7 +19,24 @@ function Read-DotEnv {
     return $valores
 }
 
-$Py = if (Test-Path (Join-Path $Raiz '.venv\Scripts\python.exe')) { Join-Path $Raiz '.venv\Scripts\python.exe' } else { 'python' }
+$Unix = $IsLinux -or $IsMacOS
+$Py = Join-Path $Raiz $(if ($Unix) { '.venv/bin/python' } else { '.venv/Scripts/python.exe' })
+if (-not (Test-Path $Py)) { $Py = if ($Unix) { 'python3' } else { 'python' } }
+$Temp = [System.IO.Path]::GetTempPath()
+
+# No Linux os arquivos gravados pelo Hop em dados/ pertencem ao usuario do container;
+# quando o Remove-Item nao tem permissao, a remocao e feita por um container.
+function Remove-Gerado([string[]]$caminhos) {
+    foreach ($c in $caminhos) {
+        $itens = @(Get-Item $c -ErrorAction SilentlyContinue)
+        if (-not $itens) { continue }
+        try { $itens | Remove-Item -Recurse -Force -ErrorAction Stop }
+        catch {
+            $rel = $c -replace '\\', '/'
+            Invoke-Docker run --rm -v "${Raiz}:/work" -w /work alpine sh -c "rm -rf $rel"
+        }
+    }
+}
 
 $Cfg = Read-DotEnv
 $PgUser = if ($Cfg.POSTGRES_USER) { $Cfg.POSTGRES_USER } else { 'postgres' }

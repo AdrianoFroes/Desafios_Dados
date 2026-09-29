@@ -22,8 +22,7 @@ Wait-Postgres
 if ($Reset -and -not $DoZero) {
     Invoke-Etapa 'reset' 'limpeza do Estudante 1' {
         Clear-Esquemas @('bronze', 'silver', 'quarentena', 'auditoria')
-        foreach ($pasta in 'dados/bronze', 'dados/silver') { if (Test-Path $pasta) { Remove-Item -Recurse -Force $pasta } }
-        Get-ChildItem dados/quarentena -Filter 'registros_quarentena_*.json' -ErrorAction SilentlyContinue | Remove-Item -Force
+        Remove-Gerado @('dados/bronze', 'dados/silver', 'dados/quarentena/registros_quarentena_*.json')
     }
 }
 Invoke-Etapa 'pre' 'Desafio 1 carregado (public.recomendacao)' {

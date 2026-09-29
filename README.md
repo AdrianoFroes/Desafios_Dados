@@ -235,6 +235,111 @@ Se a senha do Postgres no `.env` mudar depois do primeiro `docker compose up`, �
 - **Apache Superset (RF13)**: orquestrado via container próprio com SQLite interno de metadados e conexão ao banco PostgreSQL do projeto. Provisionamento automático de views, datasets e dashboards via API/script Python.
 - **Registro de Execução (RF14)**: log com cronometragem granular de cada etapa do pipeline gravado no resumo JSON e no arquivo de log.
 
+## Desafio 2 — execução por aluno (Windows e Linux)
+
+Os scripts ficam em `scripts/` e são PowerShell. No Linux eles rodam com o PowerShell 7 (`pwsh`), que é multiplataforma: os mesmos arquivos servem para os dois sistemas.
+
+| Aluno | Responsabilidade | Script |
+| --- | --- | --- |
+| Estudante 1 | Apache Hop, Bronze, Silver, quarentena, workflows (RF20–RF23) | `scripts/aluno1_hop_bronze_silver.ps1` |
+| Estudante 2 | Qualidade, Gold, dados mestres, Parquet e Beam (RF24–RF26, RF30, RF31) | `scripts/aluno2_qualidade_gold_beam.ps1` |
+| Estudante 3 | LGPD, SQL Lab, Superset, OpenMetadata (RF16–RF18, RF27–RF29, RF32, RF33) | `scripts/aluno3_governanca_superset.ps1` |
+
+A ordem importa: o Estudante 2 lê a Silver do Estudante 1, e o Estudante 3 lê a Gold do Estudante 2.
+
+### Pré-requisitos no Linux (Ubuntu/Debian)
+
+```bash
+# Docker Engine com o plugin compose (docker compose, não docker-compose)
+sudo apt-get update && sudo apt-get install -y docker.io docker-compose-v2
+sudo usermod -aG docker $USER      # sair e entrar de novo na sessão para valer
+
+# PowerShell 7
+sudo apt-get install -y wget apt-transport-https software-properties-common
+source /etc/os-release
+wget -q https://packages.microsoft.com/config/$ID/$VERSION_ID/packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb && rm packages-microsoft-prod.deb
+sudo apt-get update && sudo apt-get install -y powershell
+
+# Python do projeto (usado pelo Desafio 1, pelo Beam sem Spark e pela configuração do OpenMetadata)
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+```
+
+Os scripts detectam o sistema: usam `.venv/bin/python` no Linux e `.venv\Scripts\python.exe` no Windows.
+
+### Primeira execução (cria o `.env`, sobe os containers e aplica os esquemas)
+
+```powershell
+# Windows (PowerShell)
+.\scripts\99_tudo.ps1 -DoZero
+```
+
+```bash
+# Linux
+pwsh ./scripts/99_tudo.ps1 -DoZero
+```
+
+Opções do `99_tudo`: `-SemOpenMetadata` (não sobe o OpenMetadata), `-PularSpark` (Beam só com DirectRunner), `-ComFalhas` (roda as simulações de falha do Hop), `-AguardarAlerta` (espera a primeira avaliação do alerta do Superset).
+
+### Rodar ou refazer a parte de um aluno
+
+O `-Reset` limpa só as camadas daquele aluno e roda as etapas dele de novo.
+
+| Aluno | Windows (PowerShell) | Linux |
+| --- | --- | --- |
+| Estudante 1 | `.\scripts\aluno1_hop_bronze_silver.ps1 -Reset` | `pwsh ./scripts/aluno1_hop_bronze_silver.ps1 -Reset` |
+| Estudante 2 | `.\scripts\aluno2_qualidade_gold_beam.ps1 -Reset` | `pwsh ./scripts/aluno2_qualidade_gold_beam.ps1 -Reset` |
+| Estudante 3 | `.\scripts\aluno3_governanca_superset.ps1 -Reset` | `pwsh ./scripts/aluno3_governanca_superset.ps1 -Reset` |
+| Todos, sem recriar o ambiente | `.\scripts\99_tudo.ps1` | `pwsh ./scripts/99_tudo.ps1` |
+
+Outras opções úteis:
+
+| O quê | Windows (PowerShell) | Linux |
+| --- | --- | --- |
+| Estudante 1 do zero (inclui o Desafio 1) | `.\scripts\aluno1_hop_bronze_silver.ps1 -DoZero` | `pwsh ./scripts/aluno1_hop_bronze_silver.ps1 -DoZero` |
+| Estudante 1 com simulações de falha | `.\scripts\aluno1_hop_bronze_silver.ps1 -Reset -ComFalhas` | `pwsh ./scripts/aluno1_hop_bronze_silver.ps1 -Reset -ComFalhas` |
+| Estudante 2 sem Spark | `.\scripts\aluno2_qualidade_gold_beam.ps1 -Reset -PularSpark` | `pwsh ./scripts/aluno2_qualidade_gold_beam.ps1 -Reset -PularSpark` |
+| Estudante 3 sem OpenMetadata | `.\scripts\aluno3_governanca_superset.ps1 -Reset -SemOpenMetadata` | `pwsh ./scripts/aluno3_governanca_superset.ps1 -Reset -SemOpenMetadata` |
+| Demonstrar o disparo do alerta | `.\scripts\06_superset.ps1 -DemonstrarDisparo` | `pwsh ./scripts/06_superset.ps1 -DemonstrarDisparo` |
+
+### Zerar o banco
+
+| O quê | Windows (PowerShell) | Linux |
+| --- | --- | --- |
+| Esvaziar todas as camadas (mantém `public.*` do Desafio 1) | `.\scripts\reset.ps1` | `pwsh ./scripts/reset.ps1` |
+| Idem e recriar os metadados do Superset | `.\scripts\reset.ps1 -Superset` | `pwsh ./scripts/reset.ps1 -Superset` |
+| Remover containers e volumes do projeto | `.\scripts\reset.ps1 -Tudo` | `pwsh ./scripts/reset.ps1 -Tudo` |
+| Parar o OpenMetadata e apagar os dados dele | `.\scripts\01_openmetadata_up.ps1 -Parar -ApagarDados` | `pwsh ./scripts/01_openmetadata_up.ps1 -Parar -ApagarDados` |
+
+### Agendamento do workflow
+
+No Windows, `.\scripts\agendar_windows.ps1` cria a tarefa no Agendador de Tarefas. No Linux, use o cron (`crontab -e`), trocando o caminho pelo da sua cópia do projeto:
+
+```cron
+15 2 * * * cd /caminho/Desafios_Dados && pwsh ./scripts/02_hop_pipeline.ps1 -ExecucaoId agendado-$(date +\%Y\%m\%d) >> hop/evidencias/cron.log 2>&1
+```
+
+### Diferenças do Linux já tratadas nos scripts
+
+- Os arquivos que o Hop grava em `dados/` pertencem ao usuário do container. Quando o reset não tem permissão para apagá-los, a remoção é feita por um container `alpine`.
+- O cliente do Beam com Spark roda como root num container; no fim, os arquivos de `dados/gold` e `beam/evidencias` voltam para o seu usuário.
+- `host.docker.internal` não existe por padrão no Linux; o job server do Spark e a ingestão do OpenMetadata recebem `host-gateway` para alcançar o Postgres.
+- A porta do Postgres vem do `POSTGRES_PORT` no `.env` (padrão `5433`). Se ela estiver ocupada, troque no `.env` antes do primeiro `99_tudo`.
+
+### Endereços
+
+| Serviço | URL | Login |
+| --- | --- | --- |
+| Apresentação | http://localhost:8085 | – |
+| Superset (dashboard) | http://localhost:8088/superset/dashboard/plataforma-educacional-kpis/ | aberto para leitura; `admin` / `admin` para editar |
+| Superset (SQL Lab e alertas) | http://localhost:8088/sqllab/ e http://localhost:8088/alert/list/ | `admin` / `admin` |
+| Mailpit (e-mails do alerta) | http://localhost:8025 | – |
+| Apache Hop Web | http://localhost:8086/ui | – |
+| OpenMetadata | http://localhost:8585 | `admin` / `admin` |
+| Airflow da ingestão do OpenMetadata | http://localhost:8090 | `admin` / `admin` |
+| PostgreSQL do projeto | `localhost:${POSTGRES_PORT}` (banco `plataforma_educacional`) | usuário e senha do `.env` |
+
 ## Desafio 2 — qualidade, Gold, Parquet e Beam
 
 A Silver continua sendo produzida pelo Apache Hop. Antes do primeiro workflow com qualidade e Gold, copie os scripts para o container e aplique uma vez. No Windows, não encaminhe o arquivo pelo pipe do PowerShell: a acentuação dos domínios (`Vídeo`, `Básico`) chega corrompida.

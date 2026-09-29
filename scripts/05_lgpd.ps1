@@ -11,7 +11,7 @@ Write-Etapa "Aplicando sql/lgpd.sql e dados de consumo protegidos"
 Invoke-PsqlArquivo 'sql/lgpd.sql'
 Invoke-PsqlArquivo 'sql/dados_mestres.sql'
 
-$tmp = Join-Path $env:TEMP "lgpd_atualizar.sql"
+$tmp = Join-Path $Temp "lgpd_atualizar.sql"
 "CALL lgpd.atualizar(:'salt');" | Set-Content $tmp -Encoding ascii
 try { Invoke-PsqlArquivo $tmp @{ salt = $Cfg.LGPD_SALT } } finally { Remove-Item $tmp -Force }
 
