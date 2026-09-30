@@ -1,12 +1,82 @@
+# 🎓 Plataforma Educacional — Pipeline de Dados
+
+> Trabalho final da disciplina **Fundamentos de Dados para IA (FIC_DEV)** — Desafio Prático 2.
+> Pipeline governado, escalável e seguro de conteúdos educacionais, evoluindo o Desafio 1 com camadas Bronze/Silver/Gold, processamento distribuído, governança e LGPD.
+
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Apache Hop](https://img.shields.io/badge/Apache%20Hop-2.19.0-1B5E20)](https://hop.apache.org/)
+[![Apache Beam](https://img.shields.io/badge/Apache%20Beam-2.76.0-FF6D00)](https://beam.apache.org/)
+[![Apache Superset](https://img.shields.io/badge/Apache%20Superset-3.1.1-20A7C9)](https://superset.apache.org/)
+[![OpenMetadata](https://img.shields.io/badge/OpenMetadata-1.x-7C4DFF)](https://open-metadata.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-pgvector-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-NoSQL-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+
+## 👥 Equipe
+
+| Integrante | Responsabilidade principal |
+| :--- | :--- |
+| **Adriano Froes** | LGPD, SQL Lab, Superset, OpenMetadata e storytelling |
+| **Daniel Alves Santos** | Qualidade, camada Gold, dados mestres, Parquet e Apache Beam |
+| **Felipe Ferreira Aguiar** | Apache Hop, camadas Bronze e Silver, workflows e tratamento de erros |
+
+
+## 🎯 O que este projeto demonstra
+
+- **Engenharia de Dados end-to-end**: ingestão (CSV/JSON), camadas Bronze → Silver → Gold, orquestração no Apache Hop
+- **Processamento distribuído**: pipeline Apache Beam rodando com DirectRunner e Spark
+- **Governança de dados**: catálogo, glossário, linhagem e classificação de PII no OpenMetadata
+- **Qualidade de dados**: 5 testes automatizados com gate que bloqueia a Gold em caso de falha crítica
+- **LGPD aplicada**: mascaramento, pseudonimização e hashing com salt — sem exposição de dados originais no dashboard
+- **Analytics e storytelling**: SQL Lab, dashboards no Superset, filtros cruzados e alertas
+- **DataOps**: parâmetros em `.env`/`config.yaml`, logs por execução e scripts reprodutíveis (Windows e Linux)
+
+## 🏗️ Arquitetura (visão geral)
+
+```
+Fontes (CSV/JSON) ─► Apache Hop (Bronze ─► Silver ─► Quarentena)
+                                   │
+                                   ▼
+                        Processamento (Parquet + Apache Beam)
+                                   │
+                                   ▼
+                        Governança (OpenMetadata + Qualidade + LGPD)
+                                   │
+                                   ▼
+                        Consumo (Gold ─► SQL Lab ─► Superset)
+```
+
+Controles transversais: configuração, metadados, qualidade, segurança, LGPD e reprocessamento.
+
+## 🚀 Como rodar (resumo)
+
+```bash
+# 1. Subir os serviços (Postgres, MongoDB, Superset, OpenMetadata, Hop Web)
+docker compose up -d
+
+# 2. Rodar o pipeline do Desafio 1 (ingestão + KPIs + dashboard Superset)
+python -m src.main
+
+# 3. Rodar o pipeline completo do Desafio 2 (Bronze → Silver → Gold + Beam + Governança)
+.\scripts\99_tudo.ps1 -DoZero          # Windows
+pwsh ./scripts/99_tudo.ps1 -DoZero     # Linux
+```
+
+> Detalhes completos, portas, credenciais e execução modular na seção [Como rodar](#como-rodar) abaixo.
+
+## 📚 Documentação técnica completa
+
+---
+
 # Plataforma Educacional — Pipeline de Dados
 
 Trabalho da disciplina Fundamentos de Dados para IA (FIC_DEV).
 
 ## Equipe
 
-- [Adriano Froes]
-- [Daniel Alves Santos]
-- [Felipe Ferreira Aguiar]
+* [Adriano Froes]
+* [Daniel Alves Santos]
+* [Felipe Ferreira Aguiar]
 
 ## Situação Problema
 
@@ -32,38 +102,31 @@ Cada equipe deverá desenvolver uma solução de dados capaz de:
 
 ## Sobre os dados
 
-Os arquivos em `dados/brutos/` são fictícios e foram gerados para o desafio:
+Os arquivos em `dados/brutos/` são fictícios e foram gerados para o desafio.
 
 Os originais não são modificados em nenhuma etapa.
 
-### Catálogo de conteúdos (`catalogo.csv`):
+### Catálogo de conteúdos (`catalogo.csv`)
 
-| Campo             | Descrição                          |
-| ----------------- | ---------------------------------- |
-| conteudo_id       | Identificador do conteúdo.         |
-| titulo            | Título do material.                |
-| tipo              | Curso, vídeo, artigo ou podcast.   |
-| categoria         | Área temática.                     |
-| nivel             | Básico, intermediário ou avançado. |
-| carga_horaria_min | Duração estimada em minutos.       |
-| data_publicacao   | Data de publicação.                |
-| descricao         | Descrição textual.                 |
-| autor             | Responsável pelo conteúdo.         |
+| Campo | Descrição |
+|---|---|
+| conteudo_id | Identificador do conteúdo. |
+| titulo | Título do material. |
+| tipo | Curso, vídeo, artigo ou podcast. |
+| categoria | Área temática. |
+| nivel | Básico, intermediário ou avançado. |
+| carga_horaria_min | Duração estimada em minutos. |
+| data_publicacao | Data de publicação. |
+| descricao | Descrição textual. |
+| autor | Responsável pelo conteúdo. |
 
-### Interações de usuários (`interacoes.json`):
+### Interações de usuários (`interacoes.json`)
 
 A fonte deverá conter, no mínimo, identificador do usuário, identificador do conteúdo, tipo de interação, data e hora, tempo consumido, percentual de conclusão e avaliação atribuída.
 
-Tipos de interação sugeridos:
+Tipos de interação sugeridos: visualização, início, conclusão, curtida, avaliação, compartilhamento.
 
-- visualização;
-- início;
-- conclusão;
-- curtida;
-- avaliação;
-- compartilhamento.
-
-### Comentários e avaliações (`comentarios.json`):
+### Comentários e avaliações (`comentarios.json`)
 
 Exemplo de documento:
 
@@ -80,28 +143,26 @@ Exemplo de documento:
 
 ## Práticas de DataOps
 
-A solução deverá apresentar práticas básicas de DataOps:
-
-- Código organizado em diretórios;
-- Arquivo README.md;
-- Dependências registradas;
-- Parâmetros de conexão separados do código;
-- Registro das etapas executadas;
-- Tratamento básico de erros;
-- Instruções para reproduzir a solução;
-- Controle de versão.
+* Código organizado em diretórios;
+* Arquivo README.md;
+* Dependências registradas;
+* Parâmetros de conexão separados do código;
+* Registro das etapas executadas;
+* Tratamento básico de erros;
+* Instruções para reproduzir a solução;
+* Controle de versão.
 
 ## Arquitetura mínima esperada
 
-| Etapa                  | Tecnologia ou Resultado                                         |
-| ---------------------- | --------------------------------------------------------------- |
-| Fontes                 | CSV, JSON                                                       |
-| Ingestão               | Leitura, validação, limpeza e registro de erros.                |
-| Dados Estruturados     | PostgreSQL                                                      |
-| Dados Semiestruturados | MongoDB                                                         |
-| Dados Vetoriais        | Pgvector                                                        |
-| Processamento          | Busca semântica e motor de recomendação.                        |
-| Apresentação           | Apache Superset conectado aos dados consolidados no PostgreSQL. |
+| Etapa | Tecnologia ou Resultado |
+|---|---|
+| Fontes | CSV, JSON |
+| Ingestão | Leitura, validação, limpeza e registro de erros. |
+| Dados Estruturados | PostgreSQL |
+| Dados Semiestruturados | MongoDB |
+| Dados Vetoriais | Pgvector |
+| Processamento | Busca semântica e motor de recomendação. |
+| Apresentação | Apache Superset conectado aos dados consolidados no PostgreSQL. |
 
 ## Estrutura
 
@@ -146,9 +207,8 @@ copy .env.example .env
 # Linux / Mac:
 cp .env.example .env
 
-# Nota: As portas e credenciais padrão já vêm configuradas (PostgreSQL na porta 5433 para
-# evitar conflito com instâncias locais na 5432, e MongoDB na 27017). Se desejar alterar,
-# basta editar as variáveis dentro do arquivo .env.
+# Nota: As portas e credenciais padrão já vêm configuradas (PostgreSQL na porta 5433,
+# e MongoDB na 27017). Se desejar alterar, basta editar as variáveis dentro do arquivo .env.
 
 # 4. subir serviços (PostgreSQL com pgvector, MongoDB, Apache Superset e Apresentação Web)
 docker compose up -d
@@ -163,29 +223,22 @@ python -m src.superset_dashboard
 ```
 
 > **Geração e Sincronização dos Gráficos no Apache Superset (RF13):**
-> - Ao rodar `python -m src.main`, o pipeline processa os dados, aplica todas as visões analíticas de KPIs no PostgreSQL e, na **Fase 3**, provisiona/atualiza automaticamente os **10 gráficos analíticos** e o **Dashboard ID 1** no Superset.
-> - Se você subir o Docker do zero ou reiniciar os containers e desejar apenas sincronizar/recriar os gráficos e o dashboard sem reprocessar todos os dados, basta executar:
->   ```bash
->   python -m src.superset_dashboard
->   ```
-> - Após a execução, o Dashboard e os gráficos estarão disponíveis imediatamente tanto na interface do Superset quanto no **Slide 4 (Modo Kiosk ao vivo)** da apresentação web.
+>
+> * Ao rodar `python -m src.main`, o pipeline processa os dados, aplica todas as visões analíticas de KPIs no PostgreSQL e, na **Fase 3**, provisiona/atualiza automaticamente os **10 gráficos analíticos** e o **Dashboard ID 1** no Superset.
+> * Se você subir o Docker do zero ou reiniciar os containers e desejar apenas sincronizar/recriar os gráficos e o dashboard sem reprocessar todos os dados, basta executar `python -m src.superset_dashboard`.
+> * Após a execução, o Dashboard e os gráficos estarão disponíveis imediatamente tanto na interface do Superset quanto no **Slide 4 (Modo Kiosk ao vivo)** da apresentação web.
 
 ### Acesso aos Serviços e URLs do Projeto
 
-- **Apresentação Executiva Web (Slides com Kiosk Superset)**:
-  - **URL**: [http://localhost:8085](http://localhost:8085) (ou [http://localhost:8085/slides.html](http://localhost:8085/slides.html))
-  - **Slide 4**: Exibe o **Dashboard do Superset ao vivo em modo Kiosk** (`/superset/dashboard/1/?standalone=2`), interativo, sem barras de navegação externas e com dados reais.
-
-- **Apache Superset (RF13)**:
-  - **URL**: [http://localhost:8088](http://localhost:8088)
-  - **Dashboard Direto (Kiosk Mode)**: [http://localhost:8088/superset/dashboard/1/?standalone=2](http://localhost:8088/superset/dashboard/1/?standalone=2)
-  - **Login / Senha**: `admin` / `admin` (também configurado com perfil público para visualização direta de dashboards e gráficos).
-  - O dashboard consolidado está acessível em **Dashboards** -> `Plataforma Educacional — KPIs e Recomendações`.
-  - Backup estático do dashboard disponível em `dashboard/dashboard_plataforma_educacional.zip`.
+* **Apresentação Executiva Web (Slides com Kiosk Superset)**: http://localhost:8085 (ou http://localhost:8085/slides.html)
+  * **Slide 4**: exibe o Dashboard do Superset ao vivo em modo Kiosk (`/superset/dashboard/1/?standalone=2`), interativo, sem barras de navegação externas e com dados reais.
+* **Apache Superset (RF13)**: http://localhost:8088
+  * **Dashboard Direto (Kiosk Mode)**: http://localhost:8088/superset/dashboard/1/?standalone=2
+  * **Login / Senha**: `admin` / `admin`
+  * Dashboard consolidado em **Dashboards** → `Plataforma Educacional — KPIs e Recomendações`.
+  * Backup estático em `dashboard/dashboard_plataforma_educacional.zip`.
 
 ### Comandos para Execução Modular (Opcional)
-
-Se desejar testar módulos individuais separadamente após a carga inicial:
 
 ```bash
 # Busca semântica vetorial (RF09)
@@ -203,44 +256,41 @@ python -m src.kpis
 python -m src.superset_dashboard
 ```
 
-A solução inclui uma apresentação interativa moderna com 9 slides executivos, estruturada especificamente para a banca avaliadora com ênfase na análise de dados, KPIs (RF12) e Dashboard no Apache Superset (RF13):
+A solução inclui uma apresentação interativa moderna com 9 slides executivos:
 
-- **URL da Apresentação Web**: [http://localhost:8085](http://localhost:8085) (ou [http://localhost:8085/slides.html](http://localhost:8085/slides.html))
-- **Recursos da Apresentação**:
-  - **Slide 4 com Superset em Kiosk Mode (`standalone=2`)**: O painel executivo do Apache Superset é renderizado diretamente dentro do slide de forma interativa (com filtros por categoria e nível funcionais), além de um alternador instantâneo para a versão de backup de alta fidelidade;
-  - **Slides Analíticos de Aprofundamento (Slides 5 a 8)**: Gráficos de alta legibilidade em tema escuro com anotações analíticas e botões diretos `⚡ Abrir Slice no Superset (Kiosk)` para exploração granular;
-  - **Acesso Rápido ao Superset**: Atalhos diretos para abrir o Apache Superset em nova aba na porta `8088` (`/superset/dashboard/1/` e `/sqllab/`);
-  - **Cronômetro Integrado**: Temporizador com meta de 10 minutos e alerta visual para controle de tempo do pitch;
-  - **Notas do Apresentador (`N`)**: Roteiro de fala detalhado com números e insights para cada slide;
-  - **Cheat Sheet de Defesa Técnica (`C`)**: Guia com respostas prontas e justificativas arquiteturais para as perguntas da banca;
-  - **Navegação**: Setas do teclado `←` / `→`, barra de espaço, e tecla `F` (tela cheia).
-- **Arquivo PowerPoint Offline**: Apresentação completa e diagramada em formato `.pptx` disponível na raiz do repositório: `apresentacao_plataforma_educacional.pptx`.
+* **URL da Apresentação Web**: http://localhost:8085 (ou http://localhost:8085/slides.html)
+* **Recursos**:
+  * **Slide 4 com Superset em Kiosk Mode (`standalone=2`)**;
+  * **Slides Analíticos de Aprofundamento (5 a 8)** com anotações e botões diretos para o Superset;
+  * **Atalhos** para o Superset em nova aba (`/superset/dashboard/1/` e `/sqllab/`);
+  * **Cronômetro Integrado** com meta de 10 minutos;
+  * **Notas do Apresentador (`N`)** e **Cheat Sheet (`C`)**;
+  * **Navegação** por setas, barra de espaço e tecla `F` (tela cheia).
+* **Arquivo PowerPoint offline**: `apresentacao_plataforma_educacional.pptx`.
 
 Se a senha do Postgres no `.env` mudar depois do primeiro `docker compose up`, é preciso recriar o volume (`docker compose down` + apagar `desafios_dados_postgres_data` + `up` de novo).
 
 ## Decisões que tomamos
 
-- o enunciado pede que o sistema rode com `python -m src.main`, então organizamos os módulos como pacote único.
-  As pastas `ingestao/` e `recomendacao/` sugeridas no PDF viram módulos (`src/ingestao.py`, `src/recomendacao.py`, `src/kpis.py`).
-- **`config.yaml` + `.env`**: parâmetros versionáveis ficam no YAML, senhas ficam no `.env` (fora do Git).
-- **Encoding UTF-8 explícito**: os dados têm acentuação em português (ex.: "Inteligência Artificial") e sem isso o Pandas quebra no Windows.
-- **Validação antes de tratamento**: preferimos separar as etapas para deixar claro o que é regra de negócio (validação) e o que é padronização
-  (tratamento). O diagnóstico do RF03 permanece sobre o bruto; o RF04 só padroniza a saída.
-- **Tratamento sem imputação de conteúdo**: nulos de texto, data e avaliação não viram sentinela (`0`, `"nan"`, data de hoje). Categorias usam rótulo canônico *case-insensitive*, não `str.title()` (que quebraria `DevOps & Cloud` e `avaliação`). Detalhes em `documentacao/decisoes_tratamento.md`.
-- **Modelo de embeddings (RF08)**: `all-MiniLM-L6-v2` do sentence-transformers. Escolhemos por ser leve (~90 MB), multilíngue o suficiente para o português e rápido em CPU. O texto embeddado é título + descrição; o vetor fica em `embedding_conteudo` associado ao `conteudo_id`. Recargas não geram de novo o mesmo par modelo/texto. Detalhes em `documentacao/modelo_embeddings.md`. **Se quiser usar um modelo maior, basta configurar o EMBEDDING_MODEL e EMBEDDING_DIMENSIONS no .env.**
-- **Busca semântica (RF09)**: a frase em português é embeddada com o mesmo modelo e comparada aos vetores no pgvector (distância de cosseno). O `top_k` e as três consultas de demonstração ficam em `config.yaml`. Resultados no log e em `dados/processados/busca_semantica.json`. Detalhes em `documentacao/busca_semantica.md`.
-- **Recomendação (RF10/RF11)**: pontuação `((Ivis + Icur) / 2) * 100 * Iconc`. Ivis e Icur vêm da similaridade de cosseno no pgvector (centroide do histórico de visualização e de curtidas/notas >= 4). Iconc remove concluídos. Positivo (>= 70) e Estável (entre 40 e 70) entram no ranking; Negativo é descartado. `top_n_por_usuario` está no YAML. O JSON vai para `dados/processados/recomendacoes.json`; o lote é gravado na tabela `recomendacao` (transação + upsert). Recargas inserem um novo `gerado_em`. Detalhes em `documentacao/recomendacao.md`.
-- **PostgreSQL (RF06/RF12)**: o script `sql/criar_tabelas.sql` é a fonte da verdade do schema e `sql/criar_views_kpi.sql` cria as visões analíticas. A recarga usa upsert (`ON CONFLICT`), sem truncar. Só entram registros tratados que passam nas regras de integridade. Comentários ficam para o MongoDB (RF07); `recomendacao` é preenchida pelo RF11.
-- **MongoDB (RF07)**: só comentários/avaliações (tags em array e texto livre). A recarga usa upsert na tripla `(usuario_id, conteudo_id, data)`. A `categoria` é copiada do catálogo na carga para o `$group` do RF07. Detalhes em `documentacao/escolha_mongodb.md`.
-- **Apache Superset (RF13)**: orquestrado via container próprio com SQLite interno de metadados e conexão ao banco PostgreSQL do projeto. Provisionamento automático de views, datasets e dashboards via API/script Python.
-- **Registro de Execução (RF14)**: log com cronometragem granular de cada etapa do pipeline gravado no resumo JSON e no arquivo de log.
+* o enunciado pede que o sistema rode com `python -m src.main`, então organizamos os módulos como pacote único. As pastas `ingestao/` e `recomendacao/` sugeridas no PDF viram módulos (`src/ingestao.py`, `src/recomendacao.py`, `src/kpis.py`).
+* **`config.yaml` + `.env`**: parâmetros versionáveis ficam no YAML, senhas ficam no `.env` (fora do Git).
+* **Encoding UTF-8 explícito**: os dados têm acentuação em português (ex.: "Inteligência Artificial") e sem isso o Pandas quebra no Windows.
+* **Validação antes de tratamento**: preferimos separar as etapas para deixar claro o que é regra de negócio (validação) e o que é padronização (tratamento). O diagnóstico do RF03 permanece sobre o bruto; o RF04 só padroniza a saída.
+* **Tratamento sem imputação de conteúdo**: nulos de texto, data e avaliação não viram sentinela (`0`, `"nan"`, data de hoje). Categorias usam rótulo canônico *case-insensitive*, não `str.title()` (que quebraria `DevOps & Cloud` e `avaliação`). Detalhes em `documentacao/decisoes_tratamento.md`.
+* **Modelo de embeddings (RF08)**: `all-MiniLM-L6-v2` do sentence-transformers. Escolhemos por ser leve (~90 MB), multilíngue o suficiente para o português e rápido em CPU. O texto embeddado é título + descrição; o vetor fica em `embedding_conteudo` associado ao `conteudo_id`. Recargas não geram de novo o mesmo par modelo/texto. Detalhes em `documentacao/modelo_embeddings.md`. **Se quiser usar um modelo maior, basta configurar o `EMBEDDING_MODEL` e `EMBEDDING_DIMENSIONS` no `.env`.**
+* **Busca semântica (RF09)**: a frase em português é embeddada com o mesmo modelo e comparada aos vetores no pgvector (distância de cosseno). O `top_k` e as três consultas de demonstração ficam em `config.yaml`. Resultados no log e em `dados/processados/busca_semantica.json`. Detalhes em `documentacao/busca_semantica.md`.
+* **Recomendação (RF10/RF11)**: pontuação `((Ivis + Icur) / 2) * 100 * Iconc`. Ivis e Icur vêm da similaridade de cosseno no pgvector (centroide do histórico de visualização e de curtidas/notas >= 4). Iconc remove concluídos. Positivo (>= 70) e Estável (entre 40 e 70) entram no ranking; Negativo é descartado. `top_n_por_usuario` está no YAML. O JSON vai para `dados/processados/recomendacoes.json`; o lote é gravado na tabela `recomendacao` (transação + upsert). Recargas inserem um novo `gerado_em`. Detalhes em `documentacao/recomendacao.md`.
+* **PostgreSQL (RF06/RF12)**: o script `sql/criar_tabelas.sql` é a fonte da verdade do schema e `sql/criar_views_kpi.sql` cria as visões analíticas. A recarga usa upsert (`ON CONFLICT`), sem truncar. Só entram registros tratados que passam nas regras de integridade. Comentários ficam para o MongoDB (RF07); `recomendacao` é preenchida pelo RF11.
+* **MongoDB (RF07)**: só comentários/avaliações (tags em array e texto livre). A recarga usa upsert na tripla `(usuario_id, conteudo_id, data)`. A `categoria` é copiada do catálogo na carga para o `$group` do RF07. Detalhes em `documentacao/escolha_mongodb.md`.
+* **Apache Superset (RF13)**: orquestrado via container próprio com SQLite interno de metadados e conexão ao banco PostgreSQL do projeto. Provisionamento automático de views, datasets e dashboards via API/script Python.
+* **Registro de Execução (RF14)**: log com cronometragem granular de cada etapa do pipeline gravado no resumo JSON e no arquivo de log.
 
 ## Desafio 2 — execução por aluno (Windows e Linux)
 
 Os scripts ficam em `scripts/` e são PowerShell. No Linux eles rodam com o PowerShell 7 (`pwsh`), que é multiplataforma: os mesmos arquivos servem para os dois sistemas.
 
 | Aluno | Responsabilidade | Script |
-| --- | --- | --- |
+|---|---|---|
 | Estudante 1 | Apache Hop, Bronze, Silver, quarentena, workflows (RF20–RF23) | `scripts/aluno1_hop_bronze_silver.ps1` |
 | Estudante 2 | Qualidade, Gold, dados mestres, Parquet e Beam (RF24–RF26, RF30, RF31) | `scripts/aluno2_qualidade_gold_beam.ps1` |
 | Estudante 3 | LGPD, SQL Lab, Superset, OpenMetadata (RF16–RF18, RF27–RF29, RF32, RF33) | `scripts/aluno3_governanca_superset.ps1` |
@@ -261,7 +311,7 @@ wget -q https://packages.microsoft.com/config/$ID/$VERSION_ID/packages-microsoft
 sudo dpkg -i packages-microsoft-prod.deb && rm packages-microsoft-prod.deb
 sudo apt-get update && sudo apt-get install -y powershell
 
-# Python do projeto (usado pelo Desafio 1, pelo Beam sem Spark e pela configuração do OpenMetadata)
+# Python do projeto
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
@@ -273,9 +323,7 @@ Os scripts detectam o sistema: usam `.venv/bin/python` no Linux e `.venv\Scripts
 ```powershell
 # Windows (PowerShell)
 .\scripts\99_tudo.ps1 -DoZero
-```
 
-```bash
 # Linux
 pwsh ./scripts/99_tudo.ps1 -DoZero
 ```
@@ -287,7 +335,7 @@ Opções do `99_tudo`: `-SemOpenMetadata` (não sobe o OpenMetadata), `-PularSpa
 O `-Reset` limpa só as camadas daquele aluno e roda as etapas dele de novo.
 
 | Aluno | Windows (PowerShell) | Linux |
-| --- | --- | --- |
+|---|---|---|
 | Estudante 1 | `.\scripts\aluno1_hop_bronze_silver.ps1 -Reset` | `pwsh ./scripts/aluno1_hop_bronze_silver.ps1 -Reset` |
 | Estudante 2 | `.\scripts\aluno2_qualidade_gold_beam.ps1 -Reset` | `pwsh ./scripts/aluno2_qualidade_gold_beam.ps1 -Reset` |
 | Estudante 3 | `.\scripts\aluno3_governanca_superset.ps1 -Reset` | `pwsh ./scripts/aluno3_governanca_superset.ps1 -Reset` |
@@ -296,7 +344,7 @@ O `-Reset` limpa só as camadas daquele aluno e roda as etapas dele de novo.
 Outras opções úteis:
 
 | O quê | Windows (PowerShell) | Linux |
-| --- | --- | --- |
+|---|---|---|
 | Estudante 1 do zero (inclui o Desafio 1) | `.\scripts\aluno1_hop_bronze_silver.ps1 -DoZero` | `pwsh ./scripts/aluno1_hop_bronze_silver.ps1 -DoZero` |
 | Estudante 1 com simulações de falha | `.\scripts\aluno1_hop_bronze_silver.ps1 -Reset -ComFalhas` | `pwsh ./scripts/aluno1_hop_bronze_silver.ps1 -Reset -ComFalhas` |
 | Estudante 2 sem Spark | `.\scripts\aluno2_qualidade_gold_beam.ps1 -Reset -PularSpark` | `pwsh ./scripts/aluno2_qualidade_gold_beam.ps1 -Reset -PularSpark` |
@@ -306,7 +354,7 @@ Outras opções úteis:
 ### Zerar o banco
 
 | O quê | Windows (PowerShell) | Linux |
-| --- | --- | --- |
+|---|---|---|
 | Esvaziar todas as camadas (mantém `public.*` do Desafio 1) | `.\scripts\reset.ps1` | `pwsh ./scripts/reset.ps1` |
 | Idem e recriar os metadados do Superset | `.\scripts\reset.ps1 -Superset` | `pwsh ./scripts/reset.ps1 -Superset` |
 | Remover containers e volumes do projeto | `.\scripts\reset.ps1 -Tudo` | `pwsh ./scripts/reset.ps1 -Tudo` |
@@ -316,21 +364,21 @@ Outras opções úteis:
 
 No Windows, `.\scripts\agendar_windows.ps1` cria a tarefa no Agendador de Tarefas. No Linux, use o cron (`crontab -e`), trocando o caminho pelo da sua cópia do projeto:
 
-```cron
+```
 15 2 * * * cd /caminho/Desafios_Dados && pwsh ./scripts/02_hop_pipeline.ps1 -ExecucaoId agendado-$(date +\%Y\%m\%d) >> hop/evidencias/cron.log 2>&1
 ```
 
 ### Diferenças do Linux já tratadas nos scripts
 
-- Os arquivos que o Hop grava em `dados/` pertencem ao usuário do container. Quando o reset não tem permissão para apagá-los, a remoção é feita por um container `alpine`.
-- O cliente do Beam com Spark roda como root num container; no fim, os arquivos de `dados/gold` e `beam/evidencias` voltam para o seu usuário.
-- `host.docker.internal` não existe por padrão no Linux; o job server do Spark e a ingestão do OpenMetadata recebem `host-gateway` para alcançar o Postgres.
-- A porta do Postgres vem do `POSTGRES_PORT` no `.env` (padrão `5433`). Se ela estiver ocupada, troque no `.env` antes do primeiro `99_tudo`.
+* Os arquivos que o Hop grava em `dados/` pertencem ao usuário do container. Quando o reset não tem permissão para apagá-los, a remoção é feita por um container `alpine`.
+* O cliente do Beam com Spark roda como root num container; no fim, os arquivos de `dados/gold` e `beam/evidencias` voltam para o seu usuário.
+* `host.docker.internal` não existe por padrão no Linux; o job server do Spark e a ingestão do OpenMetadata recebem `host-gateway` para alcançar o Postgres.
+* A porta do Postgres vem do `POSTGRES_PORT` no `.env` (padrão `5433`). Se ela estiver ocupada, troque no `.env` antes do primeiro `99_tudo`.
 
 ### Endereços
 
 | Serviço | URL | Login |
-| --- | --- | --- |
+|---|---|---|
 | Apresentação | http://localhost:8085 | – |
 | Superset (dashboard) | http://localhost:8088/superset/dashboard/plataforma-educacional-kpis/ | aberto para leitura; `admin` / `admin` para editar |
 | Superset (SQL Lab e alertas) | http://localhost:8088/sqllab/ e http://localhost:8088/alert/list/ | `admin` / `admin` |
@@ -381,14 +429,7 @@ Todos os requisitos obrigatórios do edital (**RF01 a RF14**) foram integralment
 
 ## Limitações
 
-- A recomendação usa uma fórmula simples (média entre visualização e curtidas, filtrada por conclusão). Não é machine learning de verdade.
-- O modelo de embeddings é pequeno, então buscas muito específicas podem trazer resultados apenas razoáveis.
-- O Superset foi configurado localmente; em outra máquina vai precisar reconectar as fontes.
-- Não há autenticação — é um projeto de estudo.
-
-## Limitações conhecidas
-
-- O motor de recomendação usa uma fórmula simples (média de visualização e curtidas, filtrada por conclusão). Não é aprendizado de máquina de verdade.
-- O modelo de embeddings é pequeno, então buscas muito específicas podem trazer resultados apenas razoáveis.
-- O Superset foi configurado localmente; em outra máquina vai precisar reconectar as fontes.
-- Não temos autenticação em nada — é um projeto de estudo.
+* A recomendação usa uma fórmula simples (média entre visualização e curtidas, filtrada por conclusão). Não é machine learning de verdade.
+* O modelo de embeddings é pequeno, então buscas muito específicas podem trazer resultados apenas razoáveis.
+* O Superset foi configurado localmente; em outra máquina vai precisar reconectar as fontes.
+* Não há autenticação — é um projeto de estudo.
